@@ -12,6 +12,8 @@ import React, {useEffect, useState} from 'react';
 import LoginScreen from 'views/loginScreen';
 import HomeScreen from 'views/homeScreen';
 import Playlist from 'views/playlist';
+import LinkDetail from 'views/linkDetail';
+import LinkTitle from 'components/linkTitle';
 import globalVariables from 'globals/globalVariables';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -58,6 +60,18 @@ const App = () => {
           name="Playlist"
           component={Playlist}
           options={({route}) => ({title: route.params.item.title})}
+        />
+        <Stack.Screen
+          name="LinkDetail"
+          component={LinkDetail}
+          options={({route}) => ({
+            headerTitle: () => (
+              <LinkTitle
+                title={route.params.item.title}
+                writer={route.params.item.writer}
+              />
+            ),
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>

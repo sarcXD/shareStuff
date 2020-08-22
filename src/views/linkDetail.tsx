@@ -23,33 +23,31 @@ const DATA = [
   },
 ];
 
-const Playlist = ({route, navigation}) => {
-  const ListItem = ({item}) => {
-    return (
-      <Pressable
-        style={({pressed}) => [
-          {
-            backgroundColor: pressed
-              ? globalVariables.color.pressed
-              : globalVariables.color.mainCard,
-          },
-          styles.listItem,
-        ]}
-        onPress={() => {
-          navigation.navigate('LinkDetail', {item: item});
-        }}>
-        <View style={styles.cardText}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.writer}>{item.writer}</Text>
-        </View>
-        <Text style={styles.unread}>{item.mainTag}</Text>
-      </Pressable>
-    );
-  };
+const ListItem = ({item}) => {
+  return (
+    <Pressable
+      style={({pressed}) => [
+        {
+          backgroundColor: pressed
+            ? globalVariables.color.pressed
+            : globalVariables.color.mainCard,
+        },
+        styles.listItem,
+      ]}
+      onPress={() => {}}>
+      <View style={styles.cardText}>
+        <Text style={styles.title}>{item.title}</Text>
+      </View>
+      <Text style={styles.unread}>{item.mainTag}</Text>
+    </Pressable>
+  );
+};
 
+const Playlist = ({route, navigation}) => {
   const renderItem = item => {
     return <ListItem item={item.item} />;
   };
+  console.log('linkDetail page');
   return (
     <View style={styles.root}>
       <FlatList
@@ -93,10 +91,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     color: 'white',
-  },
-  writer: {
-    fontSize: 14,
-    color: globalVariables.color.desc,
   },
   unread: {
     right: 0,
