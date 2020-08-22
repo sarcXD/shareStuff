@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "515714145009",
+    "firebase_url": "https://sharestuff-2462e.firebaseio.com",
+    "project_id": "sharestuff-2462e",
+    "storage_bucket": "sharestuff-2462e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515714145009:android:3e613a1b8c39254bf32750",
+        "android_client_info": {
+          "package_name": "com.sharestuffapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "515714145009-v2htr6d29bc4aif9okbd9bkd4al3i8vu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sharestuffapp",
+            "certificate_hash": "e871b52142bb204a7415ac5d01f24beb0e525ae3"
+          }
+        },
+        {
+          "client_id": "515714145009-7vnddn3a5q3l2vp4np78koohjjb7phie.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0Jprxkx6zyiHukhIyQ2leTUJB1z9rLGY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "515714145009-7vnddn3a5q3l2vp4np78koohjjb7phie.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
