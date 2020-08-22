@@ -5,56 +5,52 @@ import globalVariables from 'globals/globalVariables';
 const DATA = [
   {
     id: '1',
-    title: 'Ghees',
-    unread: '13',
-    latestPostTitle: 'check this out guys',
+    title: 'Good Idea',
+    mainTag: 'tech',
   },
   {
     id: '2',
-    title: 'SharedPlaylist',
-    unread: '2',
-    latestPostTitle: 'this is unreal',
+    title: 'useful video',
+    mainTag: 'tech',
   },
   {
     id: '3',
-    title: 'Khwaja',
-    unread: '7',
-    latestPostTitle: 'sick new game for you I mean check ...',
+    title: 'Listen to this',
+    mainTag: 'music',
   },
 ];
 
-const HomeScreen = ({navigation}) => {
+const ListItem = ({item}) => {
+  return (
+    <Pressable
+      style={({pressed}) => [
+        {
+          backgroundColor: pressed
+            ? globalVariables.color.pressed
+            : globalVariables.color.mainCard,
+        },
+        styles.listItem,
+      ]}
+      onPress={() => {}}>
+      <View style={styles.cardText}>
+        <Text style={styles.title}>{item.title}</Text>
+      </View>
+      <Text style={styles.unread}>{item.mainTag}</Text>
+    </Pressable>
+  );
+};
+
+const Playlist = ({route, navigation}) => {
   const renderItem = item => {
     return <ListItem item={item.item} />;
   };
-
-  const ListItem = ({item}) => {
-    return (
-      <Pressable
-        style={({pressed}) => [
-          {
-            backgroundColor: pressed
-              ? globalVariables.color.pressed
-              : globalVariables.color.mainCard,
-          },
-          styles.listItem,
-        ]}
-        onPress={() => navigation.navigate('Playlist', {item: item})}>
-        <View style={styles.cardText}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.desc}>{item.latestPostTitle}</Text>
-        </View>
-        <Text style={styles.unread}>{item.unread}</Text>
-      </Pressable>
-    );
-  };
-
   return (
     <View style={styles.root}>
       <FlatList
         data={DATA}
         renderItem={renderItem}
         keyExtractor={item => item.id}
+        style={{marginTop: 4}}
       />
     </View>
   );
@@ -75,24 +71,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 70,
+    height: 55,
+    margin: 2,
     borderStyle: 'dotted',
     borderWidth: 1,
+    borderRadius: 40,
   },
   cardText: {
     marginTop: 5,
     marginBottom: 5,
-    marginLeft: 15,
+    marginLeft: 35,
     marginRight: 7,
     maxWidth: 250,
   },
   title: {
     fontSize: 16,
     color: 'white',
-  },
-  desc: {
-    fontSize: 14,
-    color: globalVariables.color.desc,
   },
   unread: {
     right: 0,
@@ -109,4 +103,4 @@ const styles = StyleSheet.create({
     height: 20,
   },
 });
-export default HomeScreen;
+export default Playlist;

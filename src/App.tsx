@@ -11,6 +11,7 @@
 import React, {useEffect, useState} from 'react';
 import LoginScreen from 'views/loginScreen';
 import HomeScreen from 'views/homeScreen';
+import Playlist from 'views/playlist';
 import globalVariables from 'globals/globalVariables';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -40,9 +41,7 @@ const App = () => {
           headerStyle: {
             backgroundColor: globalVariables.color.navBar,
           },
-          headerTitleStyle: {
-            color: globalVariables.color.title,
-          },
+          headerTintColor: globalVariables.color.title,
         }}>
         {user == null ? (
           <Stack.Screen
@@ -55,6 +54,11 @@ const App = () => {
         ) : (
           <Stack.Screen name="Home" component={HomeScreen} />
         )}
+        <Stack.Screen
+          name="Playlist"
+          component={Playlist}
+          options={({route}) => ({title: route.params.item.title})}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
