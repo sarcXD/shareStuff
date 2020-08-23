@@ -15,13 +15,7 @@ const styles = StyleSheet.create({
   root: {
     display: 'flex',
   },
-  title: {
-    color: globalVariables.color.title,
-    fontSize: 16,
-  },
-  writer: {
-    fontSize: 14,
-    color: globalVariables.color.desc,
-  },
+  title: globalVariables.styles.title,
+  writer: globalVariables.styles.secondaryText,
 });
 export default LinkTitle;

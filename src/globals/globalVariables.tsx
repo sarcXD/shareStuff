@@ -1,3 +1,5 @@
+const color = GlobalVariables.color;
+
 const GlobalVariables = {
   variables: {
     clientId:
@@ -11,6 +13,34 @@ const GlobalVariables = {
     desc: 'rgb(163, 163, 163)',
     unread: 'rgb(192, 147, 255)',
     pressed: 'rgb(91, 91, 91)',
+  },
+  styles: {
+    bubbleTag: {
+      right: 0,
+      borderStyle: 'solid',
+      borderColor: 'white',
+      backgroundColor: color.unread,
+      borderRadius: 12,
+      marginTop: 5,
+      marginBottom: 5,
+      marginLeft: 7,
+      marginRight: 15,
+      paddingLeft: 6,
+      paddingRight: 6,
+      height: 20,
+    },
+    secondaryText: {
+      fontSize: 14,
+      color: color.desc,
+    },
+    title: {
+      fontSize: 16,
+      color: 'white',
+    },
+    viewportRoot: {
+      flex: 1,
+      backgroundColor: color.background,
+    },
   },
 };
 

@@ -47,7 +47,6 @@ const Playlist = ({route, navigation}) => {
   const renderItem = item => {
     return <ListItem item={item.item} />;
   };
-  console.log('linkDetail page');
   return (
     <View style={styles.root}>
       <FlatList
@@ -61,10 +60,7 @@ const Playlist = ({route, navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: globalVariables.color.background,
-  },
+  root: globalVariables.styles.viewportRoot,
   button: {
     width: 192,
     height: 48,
@@ -88,23 +84,7 @@ const styles = StyleSheet.create({
     marginRight: 7,
     maxWidth: 250,
   },
-  title: {
-    fontSize: 16,
-    color: 'white',
-  },
-  unread: {
-    right: 0,
-    borderStyle: 'solid',
-    borderColor: 'white',
-    backgroundColor: globalVariables.color.unread,
-    borderRadius: 12,
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 7,
-    marginRight: 15,
-    paddingLeft: 6,
-    paddingRight: 6,
-    height: 20,
-  },
+  title: globalVariables.styles.title,
+  unread: globalVariables.styles.bubbleTag,
 });
 export default Playlist;
