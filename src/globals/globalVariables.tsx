@@ -1,5 +1,3 @@
-const color = GlobalVariables.color;
-
 const GlobalVariables = {
   variables: {
     clientId:
@@ -19,7 +17,7 @@ const GlobalVariables = {
       right: 0,
       borderStyle: 'solid',
       borderColor: 'white',
-      backgroundColor: color.unread,
+      backgroundColor: 'rgb(192, 147, 255)',
       borderRadius: 12,
       marginTop: 5,
       marginBottom: 5,
@@ -31,7 +29,7 @@ const GlobalVariables = {
     },
     secondaryText: {
       fontSize: 14,
-      color: color.desc,
+      color:  'rgb(163, 163, 163)',
     },
     title: {
       fontSize: 16,
@@ -39,7 +37,7 @@ const GlobalVariables = {
     },
     viewportRoot: {
       flex: 1,
-      backgroundColor: color.background,
+      backgroundColor:  'rgb(18, 18, 18)',
     },
   },
 };
