@@ -7,6 +7,7 @@ const GlobalVariables = {
     background: 'rgb(18, 18, 18)',
     navBar: 'rgba(18, 18, 18, .80)',
     mainCard: 'rgb(35, 35, 35)',
+    secondaryLayer: 'rgb(40, 40, 40)',
     pressed: 'rgb(91, 91, 91)',
     title: '#ffffff',
     secondaryText: 'rgb(163, 163, 163)',
@@ -16,6 +17,19 @@ const GlobalVariables = {
     negative: '#ffde03',
   },
   styles: {
+    commentBase: {
+      display: 'flex',
+      width: 270,
+      backgroundColor: 'rgb(40, 40, 40)',
+      marginVertical: 4,
+      marginHorizontal: 4,
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderRadius: 20,
+      borderColor: 'white',
+      paddingHorizontal: 8,
+      paddingBottom: 6,
+    },
     bubbleTag: {
       right: 0,
       borderStyle: 'solid',

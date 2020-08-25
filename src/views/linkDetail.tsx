@@ -14,40 +14,42 @@ import {Icon} from 'react-native-elements';
 
 const DATA = {
   postId: '12',
+  userId: '69',
   desc:
     'Man I came across this sickAf video, like checkout how awesome it is,the explanation is too good',
   mainTag: 'tech',
   link: 'https://www.youtube.com/watch?v=C27RVio2rOs',
   totalMore: 2,
   totalLess: 0,
+  comments: [
+    {id: 1, userId: '72', name: 'moughees', comment: 'wow! pretty good'},
+    {
+      id: 2,
+      userId: '69',
+      name: 'talha',
+      comment: 'yeah, what do you think about it',
+    },
+    {id: 3, userId: '72', name: 'moughees', comment: 'about what?'},
+    {
+      id: 4,
+      userId: '69',
+      name: 'talha',
+      comment: 'for our direction now, how long before we achieve market fit?',
+    },
+  ],
 };
 
 const ListItem = ({item}) => {
   return (
     <Pressable
-      style={({pressed}) => [
-        {
-          backgroundColor: pressed
-            ? globalVariables.color.pressed
-            : globalVariables.color.mainCard,
-        },
-        styles.listItem,
-      ]}
+      style={[DATA.userId === item.userId ? styles.comment : styles.reply]}
       onPress={() => {}}>
-      <View style={styles.cardText}>
-        <Text style={styles.title}>{item.title}</Text>
-      </View>
-      <Text style={styles.unread}>{item.mainTag}</Text>
+      <Text style={styles.commentTitle}>{item.name}</Text>
+      <Text style={styles.desc}>{item.comment}</Text>
     </Pressable>
   );
 };
 
-//<FlatList
-//  data={DATA}
-//  renderItem={renderItem}
-//  keyExtractor={item => item.id}
-//  style={{marginTop: 4}}
-///>;
 const Playlist = ({route, navigation}) => {
   const renderItem = item => {
     return <ListItem item={item.item} />;
@@ -85,6 +87,14 @@ const Playlist = ({route, navigation}) => {
               iconStyle={styles.lessButtonIcon}
             />
           </View>
+          <View>
+            <FlatList
+              data={DATA.comments}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+              style={styles.commentSection}
+            />
+          </View>
         </View>
       </View>
     </View>
@@ -105,19 +115,19 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderRadius: 15,
     borderColor: globalVariables.color.pressed,
-    paddingVertical: 8,
+    paddingTop: 8,
   },
-  cardBottom: {
+  cardBottom: {},
+  voteBar: {
     borderTopColor: globalVariables.color.secondaryText,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderBottomColor: globalVariables.color.secondaryText,
-  },
-  voteBar: {
     display: 'flex',
     flexDirection: 'row',
     paddingVertical: 4,
     justifyContent: 'space-evenly',
+    backgroundColor: globalVariables.color.secondaryLayer,
   },
   moreButton: {
     ...globalVariables.styles.bubbleTag,
@@ -168,6 +178,16 @@ const styles = StyleSheet.create({
     marginRight: 0,
     marginLeft: 0,
   },
-  unread: globalVariables.styles.bubbleTag,
+  commentTitle: globalVariables.styles.secondaryText,
+  reply: {
+    ...globalVariables.styles.commentBase,
+    borderTopLeftRadius: 0,
+  },
+  comment: {
+    ...globalVariables.styles.commentBase,
+    borderTopRightRadius: 0,
+    alignItems: 'flex-end',
+  },
+  commentSection: {},
 });
 export default Playlist;
