@@ -3,14 +3,18 @@ import {
   Alert,
   StyleSheet,
   Text,
+  TextInput,
   View,
-  FlatList,
+  KeyboardAvoidingView,
+  SectionList,
   Pressable,
   Linking,
 } from 'react-native';
 import globalVariables from 'globals/globalVariables';
 import VoteButton from 'components/voteButton';
+import CommentSection from 'components/commentSection';
 import {Icon} from 'react-native-elements';
+import {HeaderHeightContext} from '@react-navigation/stack';
 
 const DATA = {
   postId: '12',
@@ -36,67 +40,65 @@ const DATA = {
       name: 'talha',
       comment: 'for our direction now, how long before we achieve market fit?',
     },
+    {id: 5, userId: '72', name: 'moughees', comment: 'testing scrolling'},
+    {id: 6, userId: '72', name: 'moughees', comment: 'testing scrolling'},
   ],
 };
 
-const ListItem = ({item}) => {
-  return (
-    <Pressable
-      style={[DATA.userId === item.userId ? styles.comment : styles.reply]}
-      onPress={() => {}}>
-      <Text style={styles.commentTitle}>{item.name}</Text>
-      <Text style={styles.desc}>{item.comment}</Text>
-    </Pressable>
-  );
-};
-
 const Playlist = ({route, navigation}) => {
-  const renderItem = item => {
-    return <ListItem item={item.item} />;
-  };
   return (
     <View style={styles.root}>
-      <View style={styles.descCard}>
-        <View style={styles.cardTop}>
-          <Text style={styles.desc}>{DATA.desc}</Text>
-          <Text
-            style={styles.link}
-            onPress={() => {
-              Linking.openURL(DATA.link);
-            }}>
-            {DATA.link}
-          </Text>
-          <View style={styles.mainTagContainer}>
-            <Text style={styles.mainTag}>{DATA.mainTag}</Text>
-          </View>
-        </View>
-        <View style={styles.cardBottom}>
-          <View style={styles.voteBar}>
-            <VoteButton
-              count={DATA.totalMore}
-              name="plus"
-              btnStyle={styles.moreButton}
-              color={globalVariables.color.positive}
-              iconStyle={styles.moreButtonIcon}
-            />
-            <VoteButton
-              count={DATA.totalLess}
-              name="minus"
-              btnStyle={styles.lessButton}
-              color={globalVariables.color.negative}
-              iconStyle={styles.lessButtonIcon}
-            />
-          </View>
-          <View>
-            <FlatList
-              data={DATA.comments}
-              renderItem={renderItem}
-              keyExtractor={item => item.id}
-              style={styles.commentSection}
-            />
-          </View>
-        </View>
-      </View>
+      <HeaderHeightContext.Consumer>
+        {headerHeight => (
+          <KeyboardAvoidingView
+            behavior={null}
+            keyboardVerticalOffset={headerHeight + 64}>
+            <View style={styles.descCard}>
+              <View style={styles.cardTop}>
+                <Text style={styles.desc}>{DATA.desc}</Text>
+                <Text
+                  style={styles.link}
+                  onPress={() => {
+                    Linking.openURL(DATA.link);
+                  }}>
+                  {DATA.link}
+                </Text>
+                <View style={styles.mainTagContainer}>
+                  <Text style={styles.mainTag}>{DATA.mainTag}</Text>
+                </View>
+              </View>
+              <View style={styles.cardBottom}>
+                <View style={styles.voteBar}>
+                  <VoteButton
+                    count={DATA.totalMore}
+                    name="plus"
+                    btnStyle={styles.moreButton}
+                    color={globalVariables.color.positive}
+                    iconStyle={styles.moreButtonIcon}
+                  />
+                  <VoteButton
+                    count={DATA.totalLess}
+                    name="minus"
+                    btnStyle={styles.lessButton}
+                    color={globalVariables.color.negative}
+                    iconStyle={styles.lessButtonIcon}
+                  />
+                </View>
+                <CommentSection DATA={DATA} />
+                <View style={styles.typeBox}>
+                  <TextInput style={styles.typeInput} />
+                  <Icon
+                    type="font-awesome"
+                    name="paper-plane"
+                    iconStyle={styles.sendIcon}
+                  />
+                </View>
+              </View>
+              <View style={{flex: 1}} />
+            </View>
+          </KeyboardAvoidingView>
+        )}
+      </HeaderHeightContext.Consumer>
     </View>
   );
 };
@@ -116,6 +118,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderColor: globalVariables.color.pressed,
     paddingTop: 8,
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
+    position: 'relative',
   },
   cardBottom: {},
   voteBar: {
@@ -156,6 +161,7 @@ const styles = StyleSheet.create({
   },
   cardTop: {
     paddingHorizontal: 10,
+    paddingBottom: 5,
   },
   desc: globalVariables.styles.title,
   divider: {
@@ -178,16 +184,23 @@ const styles = StyleSheet.create({
     marginRight: 0,
     marginLeft: 0,
   },
-  commentTitle: globalVariables.styles.secondaryText,
-  reply: {
-    ...globalVariables.styles.commentBase,
-    borderTopLeftRadius: 0,
+  typeBox: {
+    backgroundColor: 'red',
+    flexDirection: 'row',
+    maxHeight: 45,
+    backgroundColor: globalVariables.color.secondaryLayer,
   },
-  comment: {
-    ...globalVariables.styles.commentBase,
-    borderTopRightRadius: 0,
-    alignItems: 'flex-end',
+  typeInput: {
+    backgroundColor: globalVariables.color.mainCard,
+    flex: 2,
+    marginLeft: 6,
+    marginVertical: 5,
+    borderBottomLeftRadius: 10,
+    color: 'white',
   },
-  commentSection: {},
+  sendIcon: {
+    margin: 9,
+    color: globalVariables.color.secondaryText,
+  },
 });
 export default Playlist;
