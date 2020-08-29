@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
 
-const VoteButton = ({count, name, btnStyle, color, iconStyle}) => {
+const VoteButton = ({count, name, btnStyle, clicked, color, iconStyle}) => {
   const colorStyle = {color: color};
   return (
     <View style={styles.btnView}>
@@ -12,13 +12,13 @@ const VoteButton = ({count, name, btnStyle, color, iconStyle}) => {
         <Icon
           type="font-awesome"
           name={name}
-          color={color}
+          color={clicked == 1 ? globalVariables.color.secondaryLayer : color}
           iconStyle={iconStyle}
         />
         <Icon
           type="font-awesome"
           name={name}
-          color={color}
+          color={clicked == 1 ? globalVariables.color.secondaryLayer : color}
           iconStyle={iconStyle}
         />
       </View>

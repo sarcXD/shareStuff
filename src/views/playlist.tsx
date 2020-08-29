@@ -52,12 +52,14 @@ const Playlist = ({route, navigation}) => {
   };
   return (
     <View style={styles.root}>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        style={{marginTop: 4}}
-      />
+      <View style={{marginVertical: 10}}>
+        <FlatList
+          data={DATA}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          style={{marginTop: 4}}
+        />
+      </View>
     </View>
   );
 };

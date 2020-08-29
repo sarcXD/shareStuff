@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Alert,
   StyleSheet,
   Text,
+  TouchableOpacity,
   TextInput,
   View,
   KeyboardAvoidingView,
-  SectionList,
+  ScrollView,
   Pressable,
   Linking,
 } from 'react-native';
@@ -17,35 +18,104 @@ import {Icon} from 'react-native-elements';
 import {HeaderHeightContext} from '@react-navigation/stack';
 
 const DATA = {
-  postId: '12',
-  userId: '69',
+  postId: 12,
+  userId: 69,
+  name: 'talha',
   desc:
     'Man I came across this sickAf video, like checkout how awesome it is,the explanation is too good',
   mainTag: 'tech',
   link: 'https://www.youtube.com/watch?v=C27RVio2rOs',
   totalMore: 2,
   totalLess: 0,
+  votes: [
+    {voterId: 72, vote: 'plus'},
+    {voterId: 69, vote: 'minus'},
+  ],
   comments: [
-    {id: 1, userId: '72', name: 'moughees', comment: 'wow! pretty good'},
+    {id: 1, userId: 72, name: 'moughees', comment: 'wow! pretty good'},
     {
       id: 2,
-      userId: '69',
+      userId: 69,
       name: 'talha',
       comment: 'yeah, what do you think about it',
     },
-    {id: 3, userId: '72', name: 'moughees', comment: 'about what?'},
+    {id: 3, userId: 72, name: 'moughees', comment: 'about what?'},
     {
       id: 4,
-      userId: '69',
+      userId: 69,
       name: 'talha',
       comment: 'for our direction now, how long before we achieve market fit?',
     },
-    {id: 5, userId: '72', name: 'moughees', comment: 'testing scrolling'},
-    {id: 6, userId: '72', name: 'moughees', comment: 'testing scrolling'},
+    {id: 5, userId: 72, name: 'moughees', comment: 'testing scrolling'},
+    {id: 6, userId: 72, name: 'moughees', comment: 'testing scrolling'},
   ],
 };
 
 const Playlist = ({route, navigation}) => {
+  const [moreTotal, setMoreTotal] = useState(0);
+  const [lessTotal, setLessTotal] = useState(0);
+  const [activated, setActivated] = useState(0);
+  const [myData, setMyData] = useState(DATA);
+  const [myComment, setMyComment] = useState('');
+
+  const upDateCount = () => {
+    let moreCount = 0;
+    let lessCount = 0;
+    myData.votes.map(el => {
+      if (el.vote === 'plus') {
+        if (el.voterId === myData.userId) {
+          setActivated(1);
+        }
+        moreCount++;
+      } else if (el.vote === 'minus') {
+        if (el.voterId === myData.userId) {
+          setActivated(-1);
+        }
+        lessCount++;
+      } else {
+        setActivated(0);
+      }
+    });
+    setMoreTotal(moreCount);
+    setLessTotal(lessCount);
+  };
+
+  const voteToggle = voteName => {
+    let notIn: boolean = true;
+    myData.votes.map(el => {
+      if (el.voterId == myData.userId) {
+        notIn = false;
+        if (el.vote === voteName) {
+          el.vote = '';
+        } else {
+          el.vote = voteName;
+        }
+      }
+    });
+    if (notIn) {
+      myData.votes.push({voterId: myData.userId, vote: voteName});
+    }
+    setMyData(myData);
+    upDateCount();
+  };
+
+  const addComment = () => {
+    let lastIndex = myData.comments.length - 1;
+    let newId = myData.comments[lastIndex].id + 1;
+    myData.comments.push({
+      id: newId,
+      userId: myData.userId,
+      name: myData.name,
+      comment: myComment,
+    });
+    setMyData(myData);
+    setMyComment('');
+  };
+
+  useEffect(() => {
+    upDateCount();
+  });
+
   return (
     <View style={styles.root}>
       <HeaderHeightContext.Consumer>
@@ -55,42 +125,70 @@ const Playlist = ({route, navigation}) => {
             keyboardVerticalOffset={headerHeight + 64}>
             <View style={styles.descCard}>
               <View style={styles.cardTop}>
-                <Text style={styles.desc}>{DATA.desc}</Text>
+                <Text style={styles.desc}>{myData.desc}</Text>
                 <Text
                   style={styles.link}
                   onPress={() => {
-                    Linking.openURL(DATA.link);
+                    Linking.openURL(myData.link);
                   }}>
-                  {DATA.link}
+                  {myData.link}
                 </Text>
                 <View style={styles.mainTagContainer}>
-                  <Text style={styles.mainTag}>{DATA.mainTag}</Text>
+                  <Text style={styles.mainTag}>{myData.mainTag}</Text>
                 </View>
               </View>
               <View style={styles.cardBottom}>
                 <View style={styles.voteBar}>
-                  <VoteButton
-                    count={DATA.totalMore}
-                    name="plus"
-                    btnStyle={styles.moreButton}
-                    color={globalVariables.color.positive}
-                    iconStyle={styles.moreButtonIcon}
-                  />
-                  <VoteButton
-                    count={DATA.totalLess}
-                    name="minus"
-                    btnStyle={styles.lessButton}
-                    color={globalVariables.color.negative}
-                    iconStyle={styles.lessButtonIcon}
-                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      voteToggle('plus');
+                    }}>
+                    <VoteButton
+                      count={moreTotal}
+                      name="plus"
+                      btnStyle={[
+                        activated == 1
+                          ? styles.moreButtonActivated
+                          : styles.moreButton,
+                      ]}
+                      clicked={[activated == 1 ? 1 : 0]}
+                      color={globalVariables.color.positive}
+                      iconStyle={styles.moreButtonIcon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      voteToggle('minus');
+                    }}>
+                    <VoteButton
+                      count={lessTotal}
+                      name="minus"
+                      btnStyle={[
+                        activated == -1
+                          ? styles.lessButtonActivated
+                          : styles.lessButton,
+                      ]}
+                      clicked={[activated == -1 ? 1 : 0]}
+                      color={globalVariables.color.negative}
+                      iconStyle={styles.lessButtonIcon}
+                    />
+                  </TouchableOpacity>
                 </View>
-                <CommentSection DATA={DATA} />
+                <CommentSection DATA={myData} />
                 <View style={styles.typeBox}>
-                  <TextInput style={styles.typeInput} />
+                  <TextInput
+                    style={styles.typeInput}
+                    multiline={true}
+                    onChangeText={text => {
+                      setMyComment(text);
+                    }}
+                    value={myComment}
+                  />
                   <Icon
                     type="font-awesome"
                     name="paper-plane"
                     iconStyle={styles.sendIcon}
+                    onPress={() => addComment()}
                   />
                 </View>
               </View>
@@ -142,6 +240,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
+  moreButtonActivated: {
+    ...globalVariables.styles.bubbleTag,
+    backgroundColor: globalVariables.color.positive,
+    borderColor: globalVariables.color.positive,
+    borderWidth: 2,
+    display: 'flex',
+    flexDirection: 'row',
+  },
   moreButtonIcon: {
     fontSize: 14,
     margin: 1,
@@ -149,6 +255,14 @@ const styles = StyleSheet.create({
   lessButton: {
     ...globalVariables.styles.bubbleTag,
     backgroundColor: globalVariables.color.mainCard,
+    borderColor: globalVariables.color.negative,
+    borderWidth: 2,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  lessButtonActivated: {
+    ...globalVariables.styles.bubbleTag,
+    backgroundColor: globalVariables.color.negative,
     borderColor: globalVariables.color.negative,
     borderWidth: 2,
     display: 'flex',
@@ -187,8 +301,8 @@ const styles = StyleSheet.create({
   typeBox: {
     backgroundColor: 'red',
     flexDirection: 'row',
-    maxHeight: 45,
     backgroundColor: globalVariables.color.secondaryLayer,
+    alignItems: 'flex-start',
   },
   typeInput: {
     backgroundColor: globalVariables.color.mainCard,
@@ -201,6 +315,7 @@ const styles = StyleSheet.create({
   sendIcon: {
     margin: 9,
     color: globalVariables.color.secondaryText,
+    top: 7,
   },
 });
 export default Playlist;

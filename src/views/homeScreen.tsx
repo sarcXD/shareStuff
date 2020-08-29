@@ -51,11 +51,13 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <View style={styles.root}>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
+      <View style={{marginVertical: 10}}>
+        <FlatList
+          data={DATA}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+      </View>
     </View>
   );
 };

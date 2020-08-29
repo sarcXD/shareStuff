@@ -4,42 +4,37 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
+  ScrollView,
   Pressable,
   Linking,
 } from 'react-native';
 import globalVariables from 'globals/globalVariables';
 
 const CommentSection = ({DATA}) => {
-  const renderItem = item => {
-    return <ListItem item={item.item} />;
-  };
-
-  const ListItem = ({item}) => {
-    return (
-      <Pressable
-        style={[
-          DATA.userId === item.userId
-            ? styles.commentContainer
-            : styles.replyContainer,
-        ]}
-        onPress={() => {}}>
-        <View
-          style={[DATA.userId === item.userId ? styles.comment : styles.reply]}>
-          <Text style={styles.commentTitle}>{item.name}</Text>
-          <Text style={styles.desc}>{item.comment}</Text>
-        </View>
-      </Pressable>
-    );
-  };
   return (
     <View style={styles.commentSection}>
-      <FlatList
-        data={DATA.comments}
-        renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
-        initialNumToRender={1}
-      />
+      <ScrollView>
+        {DATA.comments.map(item => {
+          return (
+            <Pressable
+              key={item.id}
+              style={[
+                DATA.userId === item.userId
+                  ? styles.commentContainer
+                  : styles.replyContainer,
+              ]}
+              onPress={() => {}}>
+              <View
+                style={[
+                  DATA.userId === item.userId ? styles.comment : styles.reply,
+                ]}>
+                <Text style={styles.commentTitle}>{item.name}</Text>
+                <Text style={styles.desc}>{item.comment}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
