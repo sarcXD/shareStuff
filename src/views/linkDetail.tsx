@@ -1,14 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import {
-  Alert,
   StyleSheet,
   Text,
   TouchableOpacity,
   TextInput,
   View,
   KeyboardAvoidingView,
-  ScrollView,
-  Pressable,
+  TouchableWithoutFeedback,
+  Keyboard,
   Linking,
 } from 'react-native';
 import globalVariables from 'globals/globalVariables';
@@ -100,16 +99,19 @@ const Playlist = ({route, navigation}) => {
   };
 
   const addComment = () => {
-    let lastIndex = myData.comments.length - 1;
-    let newId = myData.comments[lastIndex].id + 1;
-    myData.comments.push({
-      id: newId,
-      userId: myData.userId,
-      name: myData.name,
-      comment: myComment,
-    });
-    setMyData(myData);
-    setMyComment('');
+    if (myComment) {
+      let lastIndex = myData.comments.length - 1;
+      let newId = myData.comments[lastIndex].id + 1;
+      myData.comments.push({
+        id: newId,
+        userId: myData.userId,
+        name: myData.name,
+        comment: myComment,
+      });
+      setMyData(myData);
+      setMyComment('');
+      Keyboard.dismiss();
+    }
   };
 
   useEffect(() => {
@@ -184,12 +186,22 @@ const Playlist = ({route, navigation}) => {
                     }}
                     value={myComment}
                   />
-                  <Icon
-                    type="font-awesome"
-                    name="paper-plane"
-                    iconStyle={styles.sendIcon}
-                    onPress={() => addComment()}
-                  />
+                  <TouchableWithoutFeedback onPress={() => addComment()}>
+                    <Icon
+                      type="font-awesome"
+                      name="paper-plane"
+                      disabled={!myComment}
+                      disabledStyle={{
+                        backgroundColor: 'rgba(0,0,0,0)',
+                      }}
+                      color={
+                        myComment
+                          ? globalVariables.color.clickable
+                          : globalVariables.color.secondaryText
+                      }
+                      iconStyle={styles.sendIcon}
+                    />
+                  </TouchableWithoutFeedback>
                 </View>
               </View>
               <View style={{flex: 1}} />
@@ -314,7 +326,6 @@ const styles = StyleSheet.create({
   },
   sendIcon: {
     margin: 9,
-    color: globalVariables.color.secondaryText,
     top: 7,
   },
 });

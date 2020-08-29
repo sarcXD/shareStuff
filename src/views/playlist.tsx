@@ -1,6 +1,7 @@
 import React from 'react';
 import {Alert, StyleSheet, Text, View, FlatList, Pressable} from 'react-native';
 import globalVariables from 'globals/globalVariables';
+import {Icon} from 'react-native-elements';
 
 const DATA = [
   {
@@ -60,6 +61,15 @@ const Playlist = ({route, navigation}) => {
           style={{marginTop: 4}}
         />
       </View>
+      <View style={styles.addBtn}>
+        <Icon
+          type="font-awesome-5"
+          color={globalVariables.color.mainCard}
+          name="plus"
+          solid={true}
+          size={25}
+        />
+      </View>
     </View>
   );
 };
@@ -83,5 +93,6 @@ const styles = StyleSheet.create({
   title: globalVariables.styles.title,
   writer: globalVariables.styles.secondaryText,
   unread: globalVariables.styles.bubbleTag,
+  addBtn: globalVariables.styles.addBtn,
 });
 export default Playlist;

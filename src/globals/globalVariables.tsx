@@ -17,6 +17,18 @@ const GlobalVariables = {
     negative: '#ffde03',
   },
   styles: {
+    addBtn: {
+      backgroundColor: '#03dac5',
+      height: 60,
+      width: 60,
+      right: 0,
+      bottom: 0,
+      position: 'absolute',
+      borderRadius: 50,
+      padding: 10,
+      justifyContent: 'center',
+      margin: 15,
+    },
     commentBase: {
       display: 'flex',
       maxWidth: 250,

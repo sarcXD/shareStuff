@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -11,9 +11,14 @@ import {
 import globalVariables from 'globals/globalVariables';
 
 const CommentSection = ({DATA}) => {
+  const scrollRef = useRef();
   return (
     <View style={styles.commentSection}>
-      <ScrollView>
+      <ScrollView
+        ref={scrollRef}
+        onContentSizeChange={() =>
+          scrollRef.current.scrollToEnd({animated: true})
+        }>
         {DATA.comments.map(item => {
           return (
             <Pressable
@@ -40,7 +45,10 @@ const CommentSection = ({DATA}) => {
 };
 
 const styles = StyleSheet.create({
-  commentTitle: globalVariables.styles.secondaryText,
+  commentTitle: {
+    ...globalVariables.styles.secondaryText,
+    marginTop: 4,
+  },
   reply: {
     ...globalVariables.styles.commentBase,
     borderTopLeftRadius: 0,

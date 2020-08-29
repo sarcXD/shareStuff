@@ -1,6 +1,7 @@
 import React from 'react';
 import {Alert, StyleSheet, Text, View, FlatList, Pressable} from 'react-native';
 import globalVariables from 'globals/globalVariables';
+import {Icon} from 'react-native-elements';
 
 const DATA = [
   {
@@ -58,6 +59,15 @@ const HomeScreen = ({navigation}) => {
           keyExtractor={item => item.id}
         />
       </View>
+      <View style={styles.addBtn}>
+        <Icon
+          type="font-awesome-5"
+          color={globalVariables.color.mainCard}
+          name="folder-plus"
+          solid={true}
+          size={30}
+        />
+      </View>
     </View>
   );
 };
@@ -77,5 +87,6 @@ const styles = StyleSheet.create({
   title: globalVariables.styles.title,
   desc: globalVariables.styles.secondaryText,
   unread: globalVariables.styles.bubbleTag,
+  addBtn: globalVariables.styles.addBtn, 
 });
 export default HomeScreen;
