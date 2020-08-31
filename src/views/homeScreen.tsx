@@ -66,6 +66,7 @@ const HomeScreen = ({navigation}) => {
           name="folder-plus"
           solid={true}
           size={30}
+          onPress={() => navigation.navigate('CreatePlaylist')}
         />
       </View>
     </View>

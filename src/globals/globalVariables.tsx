@@ -17,6 +17,18 @@ const GlobalVariables = {
     negative: '#ffde03',
   },
   styles: {
+    mainCard: {
+      backgroundColor: 'rgb(35, 35, 35)',
+      margin: 12,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderRadius: 15,
+      borderColor:  'rgb(91, 91, 91)',
+      paddingTop: 8,
+      justifyContent: 'flex-end',
+      overflow: 'hidden',
+      position: 'relative',
+    },
     addBtn: {
       backgroundColor: '#03dac5',
       height: 60,

@@ -38,15 +38,6 @@ const DATA = {
       name: 'talha',
       comment: 'yeah, what do you think about it',
     },
-    {id: 3, userId: 72, name: 'moughees', comment: 'about what?'},
-    {
-      id: 4,
-      userId: 69,
-      name: 'talha',
-      comment: 'for our direction now, how long before we achieve market fit?',
-    },
-    {id: 5, userId: 72, name: 'moughees', comment: 'testing scrolling'},
-    {id: 6, userId: 72, name: 'moughees', comment: 'testing scrolling'},
   ],
 };
 
@@ -220,18 +211,7 @@ const styles = StyleSheet.create({
     height: 48,
     margin: 25,
   },
-  descCard: {
-    backgroundColor: globalVariables.color.mainCard,
-    margin: 12,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderRadius: 15,
-    borderColor: globalVariables.color.pressed,
-    paddingTop: 8,
-    justifyContent: 'flex-end',
-    overflow: 'hidden',
-    position: 'relative',
-  },
+  descCard: globalVariables.styles.mainCard,
   cardBottom: {},
   voteBar: {
     borderTopColor: globalVariables.color.secondaryText,
