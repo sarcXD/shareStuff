@@ -10,6 +10,7 @@ import {
   Modal,
 } from 'react-native';
 import FriendsList from 'components/friendsList';
+import SelectedList from 'components/selectedList';
 import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
 
@@ -47,32 +48,6 @@ const CreatePlaylist = ({route, navigation}) => {
     let index = arrayCopy.indexOf(item);
     arrayCopy.splice(index, 1);
     setSelectedFriends(arrayCopy);
-  };
-
-  const SelectedItem = ({item, onPress}) => {
-    return (
-      <TouchableOpacity style={styles.selectedItem} onPress={onPress}>
-        <Icon
-          name="times"
-          type="font-awesome-5"
-          color="red"
-          style={styles.removeIcon}
-          size={20}
-        />
-        <View style={styles.verticalDivider} />
-        <Text style={styles.selectedText}>{item.name}</Text>
-      </TouchableOpacity>
-    );
-  };
-  const renderSelectedFriends = ({item}) => {
-    return (
-      <SelectedItem
-        item={item}
-        onPress={() => {
-          removeSelectedItem(item);
-        }}
-      />
-    );
   };
 
   return (
@@ -119,11 +94,7 @@ const CreatePlaylist = ({route, navigation}) => {
           </TouchableOpacity>
         </View>
         <View style={styles.divider} />
-        <FlatList
-          data={selectedFriends}
-          renderItem={renderSelectedFriends}
-          keyExtractor={item => item.id}
-        />
+        <SelectedList Data={selectedFriends} onChange={removeSelectedItem} />
       </View>
     </View>
   );
@@ -185,27 +156,6 @@ const styles = StyleSheet.create({
   cardText: {
     ...globalVariables.styles.cardText,
     marginLeft: 35,
-  },
-  selectedItem: {
-    borderWidth: 1,
-    padding: 4,
-    margin: 2,
-    borderRadius: 5,
-    borderColor: globalVariables.color.secondaryText,
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-  },
-  selectedText: {
-    color: 'white',
-  },
-  verticalDivider: {
-    borderLeftWidth: 1,
-    borderLeftColor: 'white',
-    marginRight: 5,
-  },
-  removeIcon: {
-    marginLeft: 3,
-    marginRight: 6,
   },
   divider: {
     ...globalVariables.styles.divider,
