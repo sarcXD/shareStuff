@@ -23,7 +23,7 @@ const GlobalVariables = {
       borderWidth: 1,
       borderStyle: 'solid',
       borderRadius: 15,
-      borderColor:  'rgb(91, 91, 91)',
+      borderColor: 'rgb(91, 91, 91)',
       paddingTop: 8,
       justifyContent: 'flex-end',
       overflow: 'hidden',
@@ -91,6 +91,12 @@ const GlobalVariables = {
       margin: 2,
       borderStyle: 'dotted',
       borderWidth: 1,
+    },
+    divider: {
+      borderBottomColor: 'rgb(163, 163, 163)',
+      borderBottomWidth: 1,
+      marginHorizontal: 5,
+      marginVertical: 9,
     },
     viewportRoot: {
       flex: 1,

@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   TextInput,
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
   FlatList,
   Pressable,
+  Modal,
 } from 'react-native';
 import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
@@ -26,32 +28,107 @@ const FriendsList = [
 ];
 
 const CreatePlaylist = ({route, navigation}) => {
-  const ListItem = ({item}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedFriends, setSelectedFriends] = useState([]);
+
+  const addToSelectedFriends = item => {
+    const index = selectedFriends.indexOf(item);
+    if (index === -1) {
+      selectedFriends.push(item);
+    } else {
+      selectedFriends.splice(index, 1);
+    }
+    setSelectedFriends(selectedFriends);
+  };
+
+  const getColor = (item, arrayToCheck) => {
+    return arrayToCheck.indexOf(item) !== -1
+      ? globalVariables.color.mainCard //seleceted
+      : globalVariables.color.secondaryLayer; //not selected / deselected
+  };
+
+  const Item = ({item, onPress}) => {
+    const [color, setColor] = useState(getColor(item, selectedFriends));
     return (
-      <Pressable
-        style={({pressed}) => [
-          {
-            backgroundColor: pressed
-              ? globalVariables.color.pressed
-              : globalVariables.color.mainCard,
-          },
-          styles.listItem,
-        ]}
+      <TouchableOpacity
         onPress={() => {
-          navigation.navigate('LinkDetail', {item: item});
-        }}>
-        <View style={styles.cardText}>
-          <Text style={styles.title}>{item.name}</Text>
-        </View>
-      </Pressable>
+          onPress();
+          setColor(getColor(item, selectedFriends));
+        }}
+        style={[styles.listItem, {backgroundColor: color}]}>
+        <Text style={styles.listItemText}>{item.name}</Text>
+      </TouchableOpacity>
     );
   };
 
-  const renderItem = item => {
-    return <ListItem item={item.item} />;
+  const renderItem = ({item}) => {
+    return <Item item={item} onPress={() => addToSelectedFriends(item)} />;
   };
+
+  const AddFriend = ({friendList}) => {
+    return (
+      <View>
+        <FlatList
+          data={friendList}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          extraData={selectedFriends}
+        />
+      </View>
+    );
+  };
+
+  const removeSelectedItem = item => {
+    console.log(selectedFriends);
+    let arrayCopy = [...selectedFriends];
+    console.log(arrayCopy);
+    let index = arrayCopy.indexOf(item);
+    arrayCopy.splice(index, 1);
+    setSelectedFriends(arrayCopy);
+  };
+
+  const SelectedItem = ({item, onPress}) => {
+    return (
+      <TouchableOpacity style={styles.selectedItem} onPress={onPress}>
+        <Icon
+          name="times"
+          type="font-awesome-5"
+          color="red"
+          style={styles.removeIcon}
+          size={20}
+        />
+        <View style={styles.verticalDivider} />
+        <Text style={styles.selectedText}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
+  const renderSelectedFriends = ({item}) => {
+    return (
+      <SelectedItem
+        item={item}
+        onPress={() => {
+          removeSelectedItem(item);
+        }}
+      />
+    );
+  };
+
   return (
     <View style={styles.root}>
+      <Modal animationType="slide" visible={modalVisible}>
+        <View style={styles.modalRoot}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalHeaderText}>Add Friend(s)</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(false);
+              }}>
+              <Text style={styles.modalSubmit}> Done </Text>
+            </TouchableOpacity>
+          </View>
+          <AddFriend friendList={FriendsList} />
+        </View>
+      </Modal>
       <View style={styles.mainCard}>
         <View>
           <Text style={styles.title}>Playlist Title</Text>
@@ -59,7 +136,11 @@ const CreatePlaylist = ({route, navigation}) => {
         </View>
         <View style={styles.addMembers}>
           <Text style={styles.title}>Add Members</Text>
-          <View style={styles.addBtn}>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => {
+              setModalVisible(true);
+            }}>
             <Icon
               type="font-awesome-5"
               color={globalVariables.color.mainCard}
@@ -69,8 +150,14 @@ const CreatePlaylist = ({route, navigation}) => {
               iconStyle={{marginRight: 5}}
             />
             <Text>Add</Text>
-          </View>
+          </TouchableOpacity>
         </View>
+        <View style={styles.divider} />
+        <FlatList
+          data={selectedFriends}
+          renderItem={renderSelectedFriends}
+          keyExtractor={item => item.id}
+        />
       </View>
     </View>
   );
@@ -82,6 +169,28 @@ const styles = StyleSheet.create({
     width: 192,
     height: 48,
     margin: 25,
+  },
+  modalRoot: {
+    backgroundColor: globalVariables.color.background,
+    height: '100%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgb(65, 65, 65)',
+    height: 57,
+    alignItems: 'center',
+    paddingHorizontal: 15,
+  },
+  modalHeaderText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  modalSubmit: {
+    color: globalVariables.color.clickable,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   mainCard: {
     backgroundColor: globalVariables.color.secondaryLayer,
@@ -114,7 +223,36 @@ const styles = StyleSheet.create({
   listItem: {
     ...globalVariables.styles.listItem,
     height: 55,
-    borderRadius: 40,
+    paddingHorizontal: 20,
+  },
+  listItemText: {
+    color: 'white',
+    fontSize: 15,
+  },
+  selectedItem: {
+    borderWidth: 1,
+    padding: 4,
+    margin: 2,
+    borderRadius: 5,
+    borderColor: globalVariables.color.secondaryText,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+  },
+  selectedText: {
+    color: 'white',
+  },
+  verticalDivider: {
+    borderLeftWidth: 1,
+    borderLeftColor: 'white',
+    marginRight: 5,
+  },
+  removeIcon: {
+    marginLeft: 3,
+    marginRight: 6,
+  },
+  divider: {
+    ...globalVariables.styles.divider,
+    marginHorizontal: 0,
   },
   title: globalVariables.styles.title,
   writer: globalVariables.styles.secondaryText,
