@@ -32,6 +32,10 @@ const friendsArray = [
 const CreatePlaylist = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedFriends, setSelectedFriends] = useState([]);
+  const [playlistObj, setPlaylistObj] = useState({
+    title: '',
+    members: selectedFriends,
+  });
 
   const addToSelectedFriends = item => {
     const index = selectedFriends.indexOf(item);
@@ -48,6 +52,30 @@ const CreatePlaylist = ({route, navigation}) => {
     let index = arrayCopy.indexOf(item);
     arrayCopy.splice(index, 1);
     setSelectedFriends(arrayCopy);
+  };
+
+  const updateTitle = text => {
+    let objCopy = {...playlistObj};
+    let newTitle = text;
+    objCopy.title = newTitle;
+    setPlaylistObj(objCopy);
+  };
+
+  const CreateBtn = () => {
+    if (playlistObj.title && playlistObj.members.length) {
+      return (
+        <View style={styles.submitBtn}>
+          <Icon
+            type="font-awesome-5"
+            color={globalVariables.color.mainCard}
+            name="plus"
+            solid={true}
+            size={30}
+            onPress={() => console.log('Submit Data')}
+          />
+        </View>
+      );
+    } else return null;
   };
 
   return (
@@ -73,7 +101,12 @@ const CreatePlaylist = ({route, navigation}) => {
       <View style={styles.mainCard}>
         <View>
           <Text style={styles.title}>Playlist Title</Text>
-          <TextInput style={styles.titleInput} maxLength={25} />
+          <TextInput
+            style={styles.titleInput}
+            value={playlistObj.title}
+            onChangeText={text => updateTitle(text)}
+            maxLength={25}
+          />
         </View>
         <View style={styles.addMembers}>
           <Text style={styles.title}>Add Members</Text>
@@ -96,6 +129,7 @@ const CreatePlaylist = ({route, navigation}) => {
         <View style={styles.divider} />
         <SelectedList Data={selectedFriends} onChange={removeSelectedItem} />
       </View>
+      <CreateBtn />
     </View>
   );
 };
@@ -164,5 +198,6 @@ const styles = StyleSheet.create({
   title: globalVariables.styles.title,
   writer: globalVariables.styles.secondaryText,
   unread: globalVariables.styles.bubbleTag,
+  submitBtn: globalVariables.styles.addBtn,
 });
 export default CreatePlaylist;
