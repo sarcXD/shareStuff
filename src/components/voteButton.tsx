@@ -10,13 +10,7 @@ const VoteButton = ({count, name, btnStyle, clicked, color, iconStyle}) => {
       <Text style={[colorStyle, styles.count]}>{count}</Text>
       <View style={btnStyle}>
         <Icon
-          type="font-awesome"
-          name={name}
-          color={clicked == 1 ? globalVariables.color.secondaryLayer : color}
-          iconStyle={iconStyle}
-        />
-        <Icon
-          type="font-awesome"
+          type="simple-line-icon"
           name={name}
           color={clicked == 1 ? globalVariables.color.secondaryLayer : color}
           iconStyle={iconStyle}

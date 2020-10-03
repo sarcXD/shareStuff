@@ -138,7 +138,7 @@ const Playlist = ({route, navigation}) => {
                     }}>
                     <VoteButton
                       count={moreTotal}
-                      name="plus"
+                      name="like"
                       btnStyle={[
                         activated == 1
                           ? styles.moreButtonActivated
@@ -155,7 +155,7 @@ const Playlist = ({route, navigation}) => {
                     }}>
                     <VoteButton
                       count={lessTotal}
-                      name="minus"
+                      name="dislike"
                       btnStyle={[
                         activated == -1
                           ? styles.lessButtonActivated
@@ -228,6 +228,8 @@ const styles = StyleSheet.create({
     ...globalVariables.styles.bubbleTag,
     backgroundColor: globalVariables.color.mainCard,
     borderColor: globalVariables.color.positive,
+    height: 25,
+    padding: 3,
     borderWidth: 2,
     display: 'flex',
     flexDirection: 'row',
@@ -236,6 +238,8 @@ const styles = StyleSheet.create({
     ...globalVariables.styles.bubbleTag,
     backgroundColor: globalVariables.color.positive,
     borderColor: globalVariables.color.positive,
+    height: 25,
+    padding: 3,
     borderWidth: 2,
     display: 'flex',
     flexDirection: 'row',
@@ -243,11 +247,14 @@ const styles = StyleSheet.create({
   moreButtonIcon: {
     fontSize: 14,
     margin: 1,
+    fontWeight: 'bold',
   },
   lessButton: {
     ...globalVariables.styles.bubbleTag,
     backgroundColor: globalVariables.color.mainCard,
     borderColor: globalVariables.color.negative,
+    height: 25,
+    padding: 3,
     borderWidth: 2,
     display: 'flex',
     flexDirection: 'row',
@@ -256,14 +263,16 @@ const styles = StyleSheet.create({
     ...globalVariables.styles.bubbleTag,
     backgroundColor: globalVariables.color.negative,
     borderColor: globalVariables.color.negative,
+    height: 25,
+    padding: 3,
     borderWidth: 2,
     display: 'flex',
     flexDirection: 'row',
   },
   lessButtonIcon: {
-    fontSize: 12,
+    fontSize: 13,
     margin: 1,
-    marginTop: 2,
+    fontWeight: 'bold',
   },
   cardTop: {
     paddingHorizontal: 10,
