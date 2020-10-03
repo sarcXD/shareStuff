@@ -9,10 +9,11 @@ import {
   Pressable,
   Modal,
 } from 'react-native';
+import FriendsList from 'components/friendsList';
 import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
 
-const FriendsList = [
+const friendsArray = [
   {
     id: '1',
     name: 'Talha Aamir',
@@ -41,47 +42,8 @@ const CreatePlaylist = ({route, navigation}) => {
     setSelectedFriends(selectedFriends);
   };
 
-  const getColor = (item, arrayToCheck) => {
-    return arrayToCheck.indexOf(item) !== -1
-      ? globalVariables.color.mainCard //seleceted
-      : globalVariables.color.secondaryLayer; //not selected / deselected
-  };
-
-  const Item = ({item, onPress}) => {
-    const [color, setColor] = useState(getColor(item, selectedFriends));
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          onPress();
-          setColor(getColor(item, selectedFriends));
-        }}
-        style={[styles.listItem, {backgroundColor: color}]}>
-        <Text style={styles.listItemText}>{item.name}</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderItem = ({item}) => {
-    return <Item item={item} onPress={() => addToSelectedFriends(item)} />;
-  };
-
-  const AddFriend = ({friendList}) => {
-    return (
-      <View>
-        <FlatList
-          data={friendList}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          extraData={selectedFriends}
-        />
-      </View>
-    );
-  };
-
   const removeSelectedItem = item => {
-    console.log(selectedFriends);
     let arrayCopy = [...selectedFriends];
-    console.log(arrayCopy);
     let index = arrayCopy.indexOf(item);
     arrayCopy.splice(index, 1);
     setSelectedFriends(arrayCopy);
@@ -126,7 +88,11 @@ const CreatePlaylist = ({route, navigation}) => {
               <Text style={styles.modalSubmit}> Done </Text>
             </TouchableOpacity>
           </View>
-          <AddFriend friendList={FriendsList} />
+          <FriendsList
+            friendList={friendsArray}
+            selectedFriends={selectedFriends}
+            onChange={addToSelectedFriends}
+          />
         </View>
       </Modal>
       <View style={styles.mainCard}>
@@ -219,15 +185,6 @@ const styles = StyleSheet.create({
   cardText: {
     ...globalVariables.styles.cardText,
     marginLeft: 35,
-  },
-  listItem: {
-    ...globalVariables.styles.listItem,
-    height: 55,
-    paddingHorizontal: 20,
-  },
-  listItemText: {
-    color: 'white',
-    fontSize: 15,
   },
   selectedItem: {
     borderWidth: 1,
