@@ -14,7 +14,7 @@ import {Icon} from 'react-native-elements';
 
 const FriendsList = ({friendList, selectedFriends, onChange}) => {
   const getColor = (item, arrayToCheck) => {
-    return arrayToCheck.indexOf(item) !== -1
+    return arrayToCheck.find(el => el.id === item.id)
       ? globalVariables.color.mainCard //seleceted
       : globalVariables.color.secondaryLayer; //not selected / deselected
   };

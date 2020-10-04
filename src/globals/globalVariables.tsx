@@ -15,6 +15,7 @@ const GlobalVariables = {
     clickable: '#03dac5',
     positive: '#62c122',
     negative: '#ffde03',
+    longPress: 'rgb(109, 108, 108)',
   },
   styles: {
     mainCard: {

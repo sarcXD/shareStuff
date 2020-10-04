@@ -55,7 +55,13 @@ const App = () => {
             }}
           />
         ) : (
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={({navigation, route}) => ({
+              headerTitle: 'Home',
+            })}
+          />
         )}
         <Stack.Screen
           name="CreatePlaylist"

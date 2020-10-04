@@ -31,27 +31,52 @@ const friendsArray = [
 
 const CreatePlaylist = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedFriends, setSelectedFriends] = useState([]);
-  const [playlistObj, setPlaylistObj] = useState({
-    title: '',
-    members: selectedFriends,
-  });
+  const {passedPlaylist} = route.params;
+  const [selectedFriends, setSelectedFriends] = useState([
+    ...passedPlaylist.members,
+  ]);
+  const [playlistObj, setPlaylistObj] = useState({...passedPlaylist});
 
   const addToSelectedFriends = item => {
-    const index = selectedFriends.indexOf(item);
+    let index = -1;
+    let tempIndex = -1;
+    let arrayCopy = [...selectedFriends];
+    arrayCopy.forEach(ele => {
+      tempIndex++;
+      if (ele.id === item.id) {
+        index = tempIndex;
+        return;
+      }
+    });
     if (index === -1) {
-      selectedFriends.push(item);
+      arrayCopy.push(item);
     } else {
-      selectedFriends.splice(index, 1);
+      arrayCopy.splice(index, 1);
     }
-    setSelectedFriends(selectedFriends);
+    setSelectedFriends(arrayCopy);
+    let objCopy = {...playlistObj};
+    let newMembers = arrayCopy;
+    objCopy.members = newMembers;
+    setPlaylistObj(objCopy);
   };
 
   const removeSelectedItem = item => {
     let arrayCopy = [...selectedFriends];
     let index = arrayCopy.indexOf(item);
+    let tempIndex = -1;
+    selectedFriends.forEach(ele => {
+      tempIndex++;
+      if (ele.id === item.id) {
+        index = tempIndex;
+        return;
+      }
+    });
     arrayCopy.splice(index, 1);
     setSelectedFriends(arrayCopy);
+    let objCopy = {...playlistObj};
+    let newMembers = arrayCopy;
+    objCopy.members = newMembers;
+    setPlaylistObj(objCopy);
   };
 
   const updateTitle = text => {
