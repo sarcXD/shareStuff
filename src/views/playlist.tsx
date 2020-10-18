@@ -48,7 +48,7 @@ const Playlist = ({route, navigation}) => {
     );
   };
 
-  const renderItem = item => {
+  const renderItem = (item) => {
     return <ListItem item={item.item} />;
   };
   return (
@@ -57,7 +57,7 @@ const Playlist = ({route, navigation}) => {
         <FlatList
           data={DATA}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           style={{marginTop: 4}}
         />
       </View>
@@ -68,6 +68,9 @@ const Playlist = ({route, navigation}) => {
           name="plus"
           solid={true}
           size={25}
+          onPress={() => {
+            navigation.navigate('CreatePost');
+          }}
         />
       </View>
     </View>

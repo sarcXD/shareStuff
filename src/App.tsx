@@ -15,6 +15,7 @@ import Playlist from 'views/playlist';
 import LinkDetail from 'views/linkDetail';
 import LinkTitle from 'components/linkTitle';
 import CreatePlaylist from 'views/createPlaylist';
+import CreatePost from 'views/createPost';
 import globalVariables from 'globals/globalVariables';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -67,6 +68,11 @@ const App = () => {
           name="CreatePlaylist"
           component={CreatePlaylist}
           options={{title: 'Create Playlist'}}
+        />
+        <Stack.Screen
+          name="CreatePost"
+          component={CreatePost}
+          options={{title: 'Create Post'}}
         />
         <Stack.Screen
           name="Playlist"
