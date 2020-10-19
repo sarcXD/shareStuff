@@ -20,16 +20,33 @@ import globalVariables from 'globals/globalVariables';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
+  const [onBoard, setOnBoard] = useState(false);
 
   function onAuthStateChanged(user: any) {
     setUser(user);
     if (initializing) setInitializing(false);
+    if (user) needOnboarding(user);
+  }
+
+  function needOnboarding(user: any) {
+    console.log(user);
+    const loginDocument = firestore()
+      .collection('logins')
+      .doc(user.email)
+      .get()
+      .then((documentSnapshot) => {
+        setOnBoard(documentSnapshot.exists);
+        if (documentSnapshot.exists) {
+          // copy values and prepare for passing in to homeScreen element
+        }
+      });
   }
 
   useEffect(() => {
