@@ -47,8 +47,9 @@ const ME = {
   id: '1',
 };
 
-const HomeScreen = ({navigation}) => {
-  const renderItem = item => {
+const HomeScreen = ({navigation, route}) => {
+  console.log(route.params);
+  const renderItem = (item) => {
     return <ListItem item={item.item} />;
   };
 
@@ -83,7 +84,7 @@ const HomeScreen = ({navigation}) => {
     }
   }, [navigation, pressedItem]);
 
-  const updatePressedState = item => {
+  const updatePressedState = (item) => {
     if (Object.keys(pressedItem).length === 0) {
       setPressedItem(item);
     } else {
@@ -139,7 +140,7 @@ const HomeScreen = ({navigation}) => {
         <FlatList
           data={DATA}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
         />
       </View>
       <View style={styles.addBtn}>

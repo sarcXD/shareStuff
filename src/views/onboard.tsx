@@ -6,6 +6,7 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Alert,
   KeyboardAvoidingView,
 } from 'react-native';
 import globalVariables from 'globals/globalVariables';
@@ -13,10 +14,37 @@ import {Icon} from 'react-native-elements';
 import {HeaderHeightContext} from '@react-navigation/stack';
 
 const Onboard = ({route, navigation}) => {
-  const user = route.params;
-  const [email, setEmail] = useState(user.email);
-  const [name, setName] = useState(user.displayName);
-  const [phone, setPhone] = useState('');
+  const user = route.params.userData;
+  const colRef = route.params.colRef;
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const phone = user.phoneNumber;
+
+  const formatNumber = (num: string) => {
+    let onlyNumeric = num.replace(/[^0-9+]/g, '');
+    let formattedText = onlyNumeric.split(' ').join('');
+    if (formattedText.length > 0) {
+      formattedText = formattedText.match(new RegExp('.{1,4}', 'g')).join(' ');
+    }
+    return formattedText;
+  };
+
+  const displayPhone = formatNumber(phone);
+
+  const postData = () => {
+    colRef
+      .doc(phone)
+      .set({
+        email: email,
+        name: name,
+        phone: phone,
+      })
+      .then(() => {
+        navigation.navigate('Home', {
+          userData: {email: email, name: name, phone: phone},
+        });
+      });
+  };
 
   const CreateBtn = () => {
     if (phone && email && name) {
@@ -29,21 +57,12 @@ const Onboard = ({route, navigation}) => {
             solid={true}
             size={40}
             onPress={() => {
-              console.log('Create Post');
+              postData();
             }}
           />
         </View>
       );
     } else return null;
-  };
-
-  const formatNumber = (num: string) => {
-    let onlyNumeric = num.replace(/[^0-9]/g, '');
-    let formattedText = onlyNumeric.split(' ').join('');
-    if (formattedText.length > 0) {
-      formattedText = formattedText.match(new RegExp('.{1,4}', 'g')).join(' ');
-    }
-    setPhone(formattedText);
   };
 
   return (
@@ -58,7 +77,7 @@ const Onboard = ({route, navigation}) => {
                 value={name}
                 onChangeText={(text) => setName(text)}
                 maxLength={60}
-                multiline={true}
+                multiline={false}
                 autoCompleteType="name"
               />
             </View>
@@ -69,7 +88,7 @@ const Onboard = ({route, navigation}) => {
                 value={email}
                 onChangeText={(text) => setEmail(text)}
                 maxLength={80}
-                multiline={true}
+                multiline={false}
                 autoCompleteType="email"
               />
             </View>
@@ -77,13 +96,8 @@ const Onboard = ({route, navigation}) => {
               <Text style={styles.title}>Phone Number</Text>
               <TextInput
                 style={styles.titleInput}
-                value={phone}
-                onChangeText={(text) => formatNumber(text)}
-                placeholder="+92XXXXXXXXXX"
-                placeholderTextColor={globalVariables.color.secondaryText}
-                autoCompleteType="tel"
-                keyboardType="numeric"
-                maxLength={15}
+                value={displayPhone}
+                editable={false}
               />
             </View>
           </View>

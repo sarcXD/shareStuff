@@ -29,6 +29,7 @@ const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
   const [userDetails, setUserDetails] = useState([]);
+  const colRef = firestore().collection('logins');
 
   function onAuthStateChanged(user: any) {
     // temp fix around state persistance
@@ -38,10 +39,8 @@ const App = () => {
   }
 
   function needOnboarding(user: any) {
-    console.log(user);
-    const loginDocument = firestore()
-      .collection('logins')
-      .doc(user.email)
+    const loginDocument = colRef
+      ?.doc(user.phoneNumber)
       .get()
       .then((documentSnapshot) => {
         if (documentSnapshot.exists) {
@@ -57,6 +56,32 @@ const App = () => {
     return subscriber; // unsubscribe on unmount
   });
 
+  const ScreenInit = () => {
+    if (user == null) {
+      return (
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            headerTitle: 'Sign Up',
+          }}
+        />
+      );
+    }
+    if (!userDetails.length) {
+      return (
+        <Stack.Screen
+          name="Onboard"
+          component={Onboard}
+          options={{
+            headerTitle: 'Setup Profile',
+          }}
+          initialParams={{userData: user?._user, colRef: colRef}}
+        />
+      );
+    }
+  };
+
   if (initializing) return null;
   return (
     <NavigationContainer>
@@ -67,33 +92,15 @@ const App = () => {
           },
           headerTintColor: globalVariables.color.title,
         }}>
-        {user == null ? (
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{
-              headerTitle: 'Sign Up',
-            }}
-          />
-        ) : !userDetails.length ? (
-          <Stack.Screen
-            name="Onboard"
-            component={Onboard}
-            options={{
-              headerTitle: 'Setup Profile',
-            }}
-            initialParams={user?._user}
-          />
-        ) : (
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={({navigation, route}) => ({
-              headerTitle: 'Home',
-            })}
-            initialParams={userDetails}
-          />
-        )}
+        {ScreenInit()}
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            headerTitle: 'Home',
+          }}
+          initialParams={userDetails}
+        />
         <Stack.Screen
           name="CreatePost"
           component={CreatePost}
