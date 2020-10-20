@@ -77,6 +77,11 @@ const GlobalVariables = {
       fontSize: 16,
       color: 'white',
     },
+    titleInput: {
+      backgroundColor: 'rgb(35, 35, 35)',
+      color: 'rgb(163, 163, 163)',
+      marginVertical: 5,
+    },
     cardText: {
       marginTop: 5,
       marginBottom: 5,

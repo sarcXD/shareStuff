@@ -17,6 +17,7 @@ import LinkTitle from 'components/linkTitle';
 import CreatePlaylist from 'views/createPlaylist';
 import CreatePost from 'views/createPost';
 import globalVariables from 'globals/globalVariables';
+import Onboard from 'views/onboard';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
@@ -27,9 +28,10 @@ const Stack = createStackNavigator();
 const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
-  const [onBoard, setOnBoard] = useState(false);
+  const [userDetails, setUserDetails] = useState([]);
 
   function onAuthStateChanged(user: any) {
+    // temp fix around state persistance
     setUser(user);
     if (initializing) setInitializing(false);
     if (user) needOnboarding(user);
@@ -42,9 +44,10 @@ const App = () => {
       .doc(user.email)
       .get()
       .then((documentSnapshot) => {
-        setOnBoard(documentSnapshot.exists);
         if (documentSnapshot.exists) {
-          // copy values and prepare for passing in to homeScreen element
+          //returns {email, name, phoneNumber}
+          let userData = documentSnapshot.data();
+          setUserDetails(userData);
         }
       });
   }
@@ -69,8 +72,17 @@ const App = () => {
             name="Login"
             component={LoginScreen}
             options={{
-              headerShown: false,
+              headerTitle: 'Sign Up',
             }}
+          />
+        ) : !userDetails.length ? (
+          <Stack.Screen
+            name="Onboard"
+            component={Onboard}
+            options={{
+              headerTitle: 'Setup Profile',
+            }}
+            initialParams={user?._user}
           />
         ) : (
           <Stack.Screen
@@ -79,17 +91,18 @@ const App = () => {
             options={({navigation, route}) => ({
               headerTitle: 'Home',
             })}
+            initialParams={userDetails}
           />
         )}
-        <Stack.Screen
-          name="CreatePlaylist"
-          component={CreatePlaylist}
-          options={{title: 'Create Playlist'}}
-        />
         <Stack.Screen
           name="CreatePost"
           component={CreatePost}
           options={{title: 'Create Post'}}
+        />
+        <Stack.Screen
+          name="CreatePlaylist"
+          component={CreatePlaylist}
+          options={{title: 'Create Playlist'}}
         />
         <Stack.Screen
           name="Playlist"
