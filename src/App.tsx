@@ -29,25 +29,25 @@ const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
   const [userDetails, setUserDetails] = useState([]);
-  const colRef = firestore().collection('logins');
 
   function onAuthStateChanged(user: any) {
     // temp fix around state persistance
     setUser(user);
-    if (initializing) setInitializing(false);
     if (user) needOnboarding(user);
   }
 
   function needOnboarding(user: any) {
-    const loginDocument = colRef
-      ?.doc(user.phoneNumber)
+    firestore()
+      .collection('logins')
+      .doc(user.phoneNumber)
       .get()
       .then((documentSnapshot) => {
         if (documentSnapshot.exists) {
           //returns {email, name, phoneNumber}
-          let userData = documentSnapshot.data();
+          let userData: any = documentSnapshot.data();
           setUserDetails(userData);
         }
+        if (initializing) setInitializing(false);
       });
   }
 
@@ -68,7 +68,7 @@ const App = () => {
         />
       );
     }
-    if (!userDetails.length) {
+    if (!userDetails) {
       return (
         <Stack.Screen
           name="Onboard"
@@ -96,10 +96,10 @@ const App = () => {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{
+          options={({navigation, route}) => ({
             headerTitle: 'Home',
-          }}
-          initialParams={userDetails}
+          })}
+          initialParams={{userData: userDetails}}
         />
         <Stack.Screen
           name="CreatePost"

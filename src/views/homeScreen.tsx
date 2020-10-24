@@ -10,30 +10,31 @@ import {
 } from 'react-native';
 import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
+import firestore from '@react-native-firebase/firestore';
 
-const DATA = [
-  {
-    id: '1',
-    title: 'Ghees',
-    unread: '13',
-    latestPostTitle: 'check this out guys',
-    ownerId: '1',
-  },
-  {
-    id: '2',
-    title: 'SharedPlaylist',
-    unread: '2',
-    latestPostTitle: 'this is unreal',
-    ownerId: '2',
-  },
-  {
-    id: '3',
-    title: 'Khwaja',
-    unread: '7',
-    latestPostTitle: 'sick new game for you I mean check ...',
-    ownerId: '1',
-  },
-];
+//const DATA = [
+//  {
+//    id: '1',
+//    title: 'Ghees',
+//    unread: '13',
+//    latestPostTitle: 'check this out guys',
+//    ownerId: '1',
+//  },
+//  {
+//    id: '2',
+//    title: 'SharedPlaylist',
+//    unread: '2',
+//    latestPostTitle: 'this is unreal',
+//    ownerId: '2',
+//  },
+//  {
+//    id: '3',
+//    title: 'Khwaja',
+//    unread: '7',
+//    latestPostTitle: 'sick new game for you I mean check ...',
+//    ownerId: '1',
+//  },
+//];
 
 const PLAYLIST = {
   title: 'Khwaja',
@@ -48,16 +49,43 @@ const ME = {
 };
 
 const HomeScreen = ({navigation, route}) => {
-  console.log(route.params);
-  const renderItem = (item) => {
-    return <ListItem item={item.item} />;
+  const userDetails = route.params.userData;
+  const [DATA, setDATA] = useState([]);
+  const [pressedItem, setPressedItem] = useState({});
+
+  const getPlaylists = (playlistsRef: any) => {
+    let playlistPromises: any = [];
+    playlistsRef.forEach((playlist: any) => {
+      playlistPromises.push(playlist.get());
+    });
+
+    let keyIter = 0;
+    let playlists: any = [];
+    Promise.all(playlistPromises).then((documentSnapshots: any) => {
+      documentSnapshots.forEach((documentSnapshot: any) => {
+        if (documentSnapshot.exists) {
+          let docData: any = {};
+          // assigning a value for react indexing to playlist obj
+          // also assigning a value in the object so I can use it to directly compare 2 objects
+          docData = documentSnapshot.data();
+          docData.key = keyIter;
+
+          playlists.push(docData);
+          setDATA(playlists);
+
+          keyIter++;
+        }
+      });
+    });
   };
 
-  const [pressedItem, setPressedItem] = useState({});
+  React.useEffect(() => {
+    getPlaylists(userDetails.playlists);
+  });
 
   React.useLayoutEffect(() => {
     if (Object.keys(pressedItem).length !== 0) {
-      if (pressedItem.ownerId === ME.id) {
+      if (pressedItem.admins.includes(userDetails.phone)) {
         navigation.setOptions({
           headerRight: () => (
             <Icon
@@ -69,7 +97,7 @@ const HomeScreen = ({navigation, route}) => {
                 // PLAYLIST as dummy data rn
                 // go to edit screen
                 navigation.navigate('CreatePlaylist', {
-                  passedPlaylist: PLAYLIST,
+                  passedPlaylist: pressedItem,
                 });
               }}
               name="edit"
@@ -85,28 +113,40 @@ const HomeScreen = ({navigation, route}) => {
   }, [navigation, pressedItem]);
 
   const updatePressedState = (item) => {
-    if (Object.keys(pressedItem).length === 0) {
-      setPressedItem(item);
-    } else {
+    if (item === [] || item.key === pressedItem.key) {
       setPressedItem([]);
+      return;
     }
+    setPressedItem(item);
   };
 
   const getStyleFromState = (pressed, item) => {
     const normal = globalVariables.color.mainCard;
     const press = globalVariables.color.pressed;
+    const itemsEqual = item.key === pressedItem.key;
     if (pressed) {
-      if (Object.keys(pressedItem).length !== 0) {
+      // if already pressed, and pressed again, highlight should cancel
+      if (itemsEqual) {
         return normal;
       } else {
         return press;
       }
-    } else if (pressedItem == item) {
+    } else if (itemsEqual) {
       return press;
     } else {
       return normal;
     }
   };
+
+  // UTILITY FUNCTION
+  const textTruncate = (str, lim) => {
+    if (str.length < lim) {
+      return str;
+    }
+    let truncStr = str.substring(0, lim) + '...';
+    return truncStr;
+  };
+
   const ListItem = ({item}) => {
     return (
       <Pressable
@@ -116,32 +156,43 @@ const HomeScreen = ({navigation, route}) => {
           },
           styles.listItem,
         ]}
-        delayLongPress={300}
         onLongPress={() => updatePressedState(item)}
         onPress={() => {
           if (Object.keys(pressedItem).length !== 0) {
-            updatePressedState(item);
+            updatePressedState([]);
           } else {
             navigation.navigate('Playlist', {item: item});
           }
         }}>
         <View style={styles.cardText}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.desc}>{item.latestPostTitle}</Text>
+          <Text style={styles.title}>{item.name}</Text>
+          <Text style={styles.desc}>{textTruncate(item.desc, 30)}</Text>
         </View>
-        <Text style={styles.unread}>{item.unread}</Text>
       </Pressable>
     );
+  };
+
+  const renderItem = (item) => {
+    return <ListItem item={item.item} />;
   };
 
   return (
     <View style={styles.root}>
       <View style={{marginVertical: 10}}>
-        <FlatList
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
+        {DATA?.length ? (
+          <FlatList
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        ) : (
+          <View style={styles.emptyTextBox}>
+            <Text style={styles.emptyText}>
+              {' '}
+              looks like you haven't created any playlists{' '}
+            </Text>
+          </View>
+        )}
       </View>
       <View style={styles.addBtn}>
         <Icon
@@ -174,6 +225,13 @@ const styles = StyleSheet.create({
   headerBtn: {
     marginHorizontal: 10,
     padding: 5,
+  },
+  emptyTextBox: {
+    top: 200,
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: globalVariables.color.secondaryText,
   },
   cardText: globalVariables.styles.cardText,
   title: globalVariables.styles.title,
