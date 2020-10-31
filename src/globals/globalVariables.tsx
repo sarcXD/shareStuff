@@ -108,6 +108,14 @@ const GlobalVariables = {
       flex: 1,
       backgroundColor: 'rgb(18, 18, 18)',
     },
+    loadingText: {
+      fontSize: 16,
+      color: '#ffffff',
+      margin: 5,
+    },
+    spinner: {
+      alignItems: 'center',
+    },
   },
 };
 

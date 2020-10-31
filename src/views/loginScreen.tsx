@@ -55,6 +55,7 @@ const LoginScreen = () => {
     setPhone(formattedText);
   };
 
+  // UTILITY COMPONENT
   const Spinner = () => {
     if (initSpinner) {
       return (
@@ -131,14 +132,8 @@ const styles = StyleSheet.create({
     backgroundColor: globalVariables.color.secondaryLayer,
     padding: 12,
   },
-  spinner: {
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: globalVariables.color.title,
-    margin: 5,
-  },
+  loadingText: globalVariables.styles.loadingText,
+  spinner: globalVariables.styles.spinner,
   numContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',

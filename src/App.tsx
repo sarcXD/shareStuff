@@ -27,13 +27,12 @@ const Stack = createStackNavigator();
 
 const App = () => {
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser]: any = useState(null);
   const [userDetails, setUserDetails] = useState([]);
 
   function onAuthStateChanged(user: any) {
     // temp fix around state persistance
     setUser(user);
-    if (user) needOnboarding(user);
   }
 
   function needOnboarding(user: any) {
@@ -45,6 +44,7 @@ const App = () => {
         if (documentSnapshot.exists) {
           //returns {email, name, phoneNumber}
           let userData: any = documentSnapshot.data();
+          console.log(userData);
           setUserDetails(userData);
         }
         if (initializing) setInitializing(false);
@@ -55,6 +55,11 @@ const App = () => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   });
+
+  useEffect(() => {
+    if (user) needOnboarding(user);
+    return;
+  }, [user?.phoneNumber]);
 
   const ScreenInit = () => {
     if (user == null) {

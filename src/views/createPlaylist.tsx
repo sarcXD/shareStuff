@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   TextInput,
   StyleSheet,
@@ -8,11 +8,17 @@ import {
   FlatList,
   Pressable,
   Modal,
+  PermissionsAndroid,
 } from 'react-native';
+import Contacts from 'react-native-contacts';
 import FriendsList from 'components/friendsList';
 import SelectedList from 'components/selectedList';
 import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore';
+import {parsePhoneNumberWithError, ParseError} from 'libphonenumber-js';
+import * as RNLocalize from 'react-native-localize';
 
 const friendsArray = [
   {
@@ -31,19 +37,146 @@ const friendsArray = [
 
 const CreatePlaylist = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const {passedPlaylist} = route.params;
-  const [selectedFriends, setSelectedFriends] = useState([
-    ...passedPlaylist.members,
-  ]);
-  const [playlistObj, setPlaylistObj] = useState({...passedPlaylist});
+  const passedPlaylist = route.params.passedPlaylist;
+  // objects to fetch ... users
+  const [selectedFriends, setSelectedFriends] = useState([]);
+  const [playlistObj, setPlaylistObj] = useState({});
+  const [contactList, setContactsList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const location = RNLocalize.getLocales();
 
-  const addToSelectedFriends = item => {
+  const readData = async (key, setter) => {
+    try {
+      const value = await AsyncStorage.getItem('@' + key);
+      if (value !== null) {
+        let parsedVal = JSON.parse(value);
+        setter(parsedVal);
+      }
+    } catch (e) {
+      console.log('err', err);
+    }
+  };
+
+  useEffect(() => {
+    readData('contactsList', setContactsList);
+    fetchFromFirebaseDocRef(passedPlaylist.users, setSelectedFriends);
+  });
+
+  // UTILITY
+  const fetchFromFirebaseDocRef = (objRef: any, setter: any) => {
+    let promiseArr: any = [];
+    objRef.forEach((ref: any) => {
+      promiseArr.push(ref.get());
+    });
+
+    let keyIter = 0;
+    let fetchedArr: any = [];
+    Promise.all(promiseArr).then((documentSnapshots: any) => {
+      documentSnapshots.forEach((documentSnapshot: any) => {
+        if (documentSnapshot.exists) {
+          let docData: any = {};
+          // assigning a value for react indexing to fetchedArr obj
+          // also assigning a value in the object so I can use it to directly compare 2 objects
+          docData = documentSnapshot.data();
+          docData.key = keyIter;
+
+          fetchedArr.push(docData);
+          setter(fetchedArr);
+
+          keyIter++;
+        }
+      });
+    });
+  };
+
+  const formatNumber = (num) => {
+    let noSpaceNum = num.split(' ').join('');
+    if (noSpaceNum[0] === '+') {
+      // internation format, just return
+      return;
+    }
+    try {
+      // Hardcoded for now since i found no other fix currently
+      const phoneNumber = parsePhoneNumberWithError(noSpaceNum, 'PK');
+      return phoneNumber.number;
+    } catch (error) {
+      if (error instanceof ParseError) {
+        console.log(error.message);
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  const storeData = async (key, value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem('@' + key, jsonValue);
+    } catch (e) {
+      console.log('Storing error', e);
+    }
+  };
+
+  const setExistingContacts = (contacts, setter) => {
+    let verifiedContactsArray = [];
+    let userRef = firestore().collection('logins');
+    let promiseArr = [];
+    // How contacting formatting should work
+    // Ask user location. All International numbers will start from +, only local with 0. I think.
+    contacts.forEach((el) => {
+      let elNumbers = el.phoneNumbers;
+      elNumbers.forEach((num) => {
+        let formattedNum = formatNumber(num.number);
+        if (formattedNum !== undefined) {
+          promiseArr.push(userRef.doc(formattedNum).get());
+        }
+      });
+    });
+
+    let keyIter = 0;
+    let contactsFound = [];
+    setLoading(true);
+    Promise.all(promiseArr).then((documentSnapshots) => {
+      documentSnapshots.forEach((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          let data = {
+            key: keyIter,
+            data: documentSnapshot.data(),
+            ref: documentSnapshot.ref,
+          };
+          contactsFound.push(data);
+          setter(contactsFound);
+        }
+      });
+      // add to cache
+      if (!contactsFound.length) return;
+      storeData('contactsList', contactsFound);
+      setLoading(false);
+    });
+  };
+
+  const askAndGetContacts = () => {
+    if (!contactList.length) {
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+        title: 'Contacts',
+        message: 'This app would like to view your contacts.',
+        buttonPositive: 'Accept',
+      }).then(
+        Contacts.getAll().then((contacts) => {
+          setExistingContacts(contacts, setContactsList);
+        }),
+      );
+    }
+    setModalVisible(true);
+  };
+
+  const addToSelectedFriends = (item) => {
     let index = -1;
     let tempIndex = -1;
     let arrayCopy = [...selectedFriends];
-    arrayCopy.forEach(ele => {
+    arrayCopy.forEach((ele) => {
       tempIndex++;
-      if (ele.id === item.id) {
+      if (ele.key === item.key) {
         index = tempIndex;
         return;
       }
@@ -60,13 +193,13 @@ const CreatePlaylist = ({route, navigation}) => {
     setPlaylistObj(objCopy);
   };
 
-  const removeSelectedItem = item => {
+  const removeSelectedItem = (item) => {
     let arrayCopy = [...selectedFriends];
     let index = arrayCopy.indexOf(item);
     let tempIndex = -1;
-    selectedFriends.forEach(ele => {
+    selectedFriends.forEach((ele) => {
       tempIndex++;
-      if (ele.id === item.id) {
+      if (ele.key === item.key) {
         index = tempIndex;
         return;
       }
@@ -79,7 +212,7 @@ const CreatePlaylist = ({route, navigation}) => {
     setPlaylistObj(objCopy);
   };
 
-  const updateTitle = text => {
+  const updateTitle = (text) => {
     let objCopy = {...playlistObj};
     let newTitle = text;
     objCopy.title = newTitle;
@@ -103,6 +236,20 @@ const CreatePlaylist = ({route, navigation}) => {
     } else return null;
   };
 
+  // UTILITY FUNCTION (SPINNER)
+  if (loading) {
+    return (
+      <View style={styles.spinner}>
+        <Text style={styles.loadingText}>Loading</Text>
+        <ActivityIndicator
+          size="large"
+          style={{elevation: 9}}
+          color={globalVariables.color.clickable}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.root}>
       <Modal animationType="slide" visible={modalVisible}>
@@ -117,7 +264,7 @@ const CreatePlaylist = ({route, navigation}) => {
             </TouchableOpacity>
           </View>
           <FriendsList
-            friendList={friendsArray}
+            friendList={contactList}
             selectedFriends={selectedFriends}
             onChange={addToSelectedFriends}
           />
@@ -125,11 +272,11 @@ const CreatePlaylist = ({route, navigation}) => {
       </Modal>
       <View style={styles.mainCard}>
         <View>
-          <Text style={styles.title}>Playlist Title</Text>
+          <Text style={styles.title}>Playlist Name</Text>
           <TextInput
             style={styles.titleInput}
-            value={playlistObj.title}
-            onChangeText={text => updateTitle(text)}
+            value={playlistObj.name}
+            onChangeText={(text) => updateTitle(text)}
             maxLength={25}
           />
         </View>
@@ -138,7 +285,7 @@ const CreatePlaylist = ({route, navigation}) => {
           <TouchableOpacity
             style={styles.addBtn}
             onPress={() => {
-              setModalVisible(true);
+              askAndGetContacts();
             }}>
             <Icon
               type="font-awesome-5"
@@ -183,6 +330,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  spinner: globalVariables.styles.spinner,
+  loadingText: globalVariables.styles.loadingText,
   modalSubmit: {
     color: globalVariables.color.clickable,
     fontSize: 18,

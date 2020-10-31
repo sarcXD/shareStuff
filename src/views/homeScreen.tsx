@@ -188,8 +188,7 @@ const HomeScreen = ({navigation, route}) => {
         ) : (
           <View style={styles.emptyTextBox}>
             <Text style={styles.emptyText}>
-              {' '}
-              looks like you haven't created any playlists{' '}
+              looks like you haven't created any playlists
             </Text>
           </View>
         )}
