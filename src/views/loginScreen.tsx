@@ -18,7 +18,7 @@ import {
 
 const LoginScreen = () => {
   // If null, no SMS has been sent
-  const [confirm, setConfirm] = useState(null);
+  const [confirm, setConfirm]: any = useState(null);
   const [code, setCode] = useState('');
   // phone is for numeric only formatted number with spaces every 4 character
   const [phone, setPhone] = useState('');
@@ -38,7 +38,7 @@ const LoginScreen = () => {
   async function confirmCode() {
     try {
       setInitSpinner(true);
-      await confirm.confirm(code);
+      await confirm?.confirm(code);
       setInitSpinner(false);
     } catch (error) {
       console.log('Invalid code.');
@@ -48,9 +48,11 @@ const LoginScreen = () => {
   const formatNumber = (num: string) => {
     let onlyNumeric = num.replace(/[^0-9]/g, '');
     setRawPhone(onlyNumeric);
-    let formattedText = onlyNumeric.split(' ').join('');
-    if (formattedText.length > 0) {
-      formattedText = formattedText.match(new RegExp('.{1,4}', 'g')).join(' ');
+    let formattedText: string = onlyNumeric.split(' ').join('');
+    if (formattedText?.length > 0) {
+      formattedText = formattedText
+        ?.match(new RegExp('.{1,4}', 'g'))
+        ?.join(' ');
     }
     setPhone(formattedText);
   };

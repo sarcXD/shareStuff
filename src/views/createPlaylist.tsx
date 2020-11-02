@@ -9,6 +9,7 @@ import {
   Pressable,
   Modal,
   PermissionsAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import Contacts from 'react-native-contacts';
 import FriendsList from 'components/friendsList';
@@ -20,28 +21,17 @@ import firestore from '@react-native-firebase/firestore';
 import {parsePhoneNumberWithError, ParseError} from 'libphonenumber-js';
 import * as RNLocalize from 'react-native-localize';
 
-const friendsArray = [
-  {
-    id: '1',
-    name: 'Talha Aamir',
-  },
-  {
-    id: '2',
-    name: 'Taha Ahmad',
-  },
-  {
-    id: '3',
-    name: 'Moughees Ahmad',
-  },
-];
-
 const CreatePlaylist = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const passedPlaylist = route.params.passedPlaylist;
   // objects to fetch ... users
   const [selectedFriends, setSelectedFriends] = useState([]);
-  const [playlistObj, setPlaylistObj] = useState({});
-  const [contactList, setContactsList] = useState([]);
+  const [playlistObj, setPlaylistObj] = useState({
+    name: passedPlaylist.name,
+    desc: passedPlaylist.desc,
+    members: [],
+  });
+  const [contactsList, setContactsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const location = RNLocalize.getLocales();
 
@@ -60,9 +50,11 @@ const CreatePlaylist = ({route, navigation}) => {
   useEffect(() => {
     readData('contactsList', setContactsList);
     fetchFromFirebaseDocRef(passedPlaylist.users, setSelectedFriends);
-  });
+  }, [contactsList.length]);
 
   // UTILITY
+  // Fetches information of users of the passed playlist object
+  // and fills the selectedFriends Object
   const fetchFromFirebaseDocRef = (objRef: any, setter: any) => {
     let promiseArr: any = [];
     objRef.forEach((ref: any) => {
@@ -89,11 +81,12 @@ const CreatePlaylist = ({route, navigation}) => {
     });
   };
 
+  // UTILITY FUNCTION
   const formatNumber = (num) => {
     let noSpaceNum = num.split(' ').join('');
     if (noSpaceNum[0] === '+') {
-      // internation format, just return
-      return;
+      // international format, just return
+      return noSpaceNum;
     }
     try {
       // Hardcoded for now since i found no other fix currently
@@ -117,6 +110,9 @@ const CreatePlaylist = ({route, navigation}) => {
     }
   };
 
+  // Basically, for all of the users contacts, pings the firebase db,
+  // checks to see if any of the contact exists as a user in the db
+  // for the existing ones, adds as contact list, and adds to the asyncStorage
   const setExistingContacts = (contacts, setter) => {
     let verifiedContactsArray = [];
     let userRef = firestore().collection('logins');
@@ -141,8 +137,7 @@ const CreatePlaylist = ({route, navigation}) => {
         if (documentSnapshot.exists) {
           let data = {
             key: keyIter,
-            data: documentSnapshot.data(),
-            ref: documentSnapshot.ref,
+            ...documentSnapshot.data(),
           };
           contactsFound.push(data);
           setter(contactsFound);
@@ -156,7 +151,7 @@ const CreatePlaylist = ({route, navigation}) => {
   };
 
   const askAndGetContacts = () => {
-    if (!contactList.length) {
+    if (!contactsList.length) {
       PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
         title: 'Contacts',
         message: 'This app would like to view your contacts.',
@@ -173,8 +168,7 @@ const CreatePlaylist = ({route, navigation}) => {
   const addToSelectedFriends = (item) => {
     let index = -1;
     let tempIndex = -1;
-    let arrayCopy = [...selectedFriends];
-    arrayCopy.forEach((ele) => {
+    selectedFriends.forEach((ele) => {
       tempIndex++;
       if (ele.key === item.key) {
         index = tempIndex;
@@ -182,19 +176,19 @@ const CreatePlaylist = ({route, navigation}) => {
       }
     });
     if (index === -1) {
-      arrayCopy.push(item);
+      selectedFriends.push(item);
     } else {
-      arrayCopy.splice(index, 1);
+      selectedFriends.splice(index, 1);
     }
-    setSelectedFriends(arrayCopy);
-    let objCopy = {...playlistObj};
-    let newMembers = arrayCopy;
-    objCopy.members = newMembers;
-    setPlaylistObj(objCopy);
+    console.log('selectedFriends', selectedFriends);
+    setSelectedFriends(selectedFriends);
+    let newMembers = selectedFriends;
+    playlistObj.members = newMembers;
+    setPlaylistObj(playlistObj);
   };
 
   const removeSelectedItem = (item) => {
-    let arrayCopy = [...selectedFriends];
+    let arrayCopy = selectedFriends;
     let index = arrayCopy.indexOf(item);
     let tempIndex = -1;
     selectedFriends.forEach((ele) => {
@@ -205,22 +199,20 @@ const CreatePlaylist = ({route, navigation}) => {
       }
     });
     arrayCopy.splice(index, 1);
-    setSelectedFriends(arrayCopy);
-    let objCopy = {...playlistObj};
-    let newMembers = arrayCopy;
-    objCopy.members = newMembers;
-    setPlaylistObj(objCopy);
+    setSelectedFriends(selectedFriends);
+    let newMembers = selectedFriends;
+    playlistObj.members = newMembers;
+    setPlaylistObj(playlistObj);
   };
 
   const updateTitle = (text) => {
-    let objCopy = {...playlistObj};
     let newTitle = text;
-    objCopy.title = newTitle;
-    setPlaylistObj(objCopy);
+    playlistObj.name = newTitle;
+    setPlaylistObj(playlistObj);
   };
 
   const CreateBtn = () => {
-    if (playlistObj.title && playlistObj.members.length) {
+    if (playlistObj.name && playlistObj.members.length) {
       return (
         <View style={styles.submitBtn}>
           <Icon
@@ -264,7 +256,7 @@ const CreatePlaylist = ({route, navigation}) => {
             </TouchableOpacity>
           </View>
           <FriendsList
-            friendList={contactList}
+            friendList={contactsList}
             selectedFriends={selectedFriends}
             onChange={addToSelectedFriends}
           />

@@ -14,11 +14,11 @@ import {Icon} from 'react-native-elements';
 
 const FriendsList = ({friendList, selectedFriends, onChange}) => {
   const getColor = (item, arrayToCheck) => {
-    return arrayToCheck.find(el => el.id === item.id)
+    return arrayToCheck.find((el) => el.phone === item.phone)
       ? globalVariables.color.mainCard //seleceted
       : globalVariables.color.secondaryLayer; //not selected / deselected
   };
-  const updateFriendsList = item => {
+  const updateFriendsList = (item) => {
     onChange(item);
   };
   const Item = ({item, onPress}) => {
@@ -42,7 +42,7 @@ const FriendsList = ({friendList, selectedFriends, onChange}) => {
       <FlatList
         data={friendList}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.key}
         extraData={selectedFriends}
       />
     </View>

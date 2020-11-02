@@ -12,42 +12,6 @@ import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 
-//const DATA = [
-//  {
-//    id: '1',
-//    title: 'Ghees',
-//    unread: '13',
-//    latestPostTitle: 'check this out guys',
-//    ownerId: '1',
-//  },
-//  {
-//    id: '2',
-//    title: 'SharedPlaylist',
-//    unread: '2',
-//    latestPostTitle: 'this is unreal',
-//    ownerId: '2',
-//  },
-//  {
-//    id: '3',
-//    title: 'Khwaja',
-//    unread: '7',
-//    latestPostTitle: 'sick new game for you I mean check ...',
-//    ownerId: '1',
-//  },
-//];
-
-const PLAYLIST = {
-  title: 'Khwaja',
-  members: [
-    {id: '3', name: 'Moughees Ahmad'},
-    {id: '1', name: 'Talha Aamir'},
-  ],
-};
-
-const ME = {
-  id: '1',
-};
-
 const HomeScreen = ({navigation, route}) => {
   const userDetails = route.params.userData;
   const [DATA, setDATA] = useState([]);
@@ -81,7 +45,8 @@ const HomeScreen = ({navigation, route}) => {
 
   React.useEffect(() => {
     getPlaylists(userDetails.playlists);
-  });
+    return;
+  }, [DATA.length]);
 
   React.useLayoutEffect(() => {
     if (Object.keys(pressedItem).length !== 0) {
@@ -123,7 +88,7 @@ const HomeScreen = ({navigation, route}) => {
   const getStyleFromState = (pressed, item) => {
     const normal = globalVariables.color.mainCard;
     const press = globalVariables.color.pressed;
-    const itemsEqual = item.key === pressedItem.key;
+    const itemsEqual = item?.key === pressedItem?.key;
     if (pressed) {
       // if already pressed, and pressed again, highlight should cancel
       if (itemsEqual) {
