@@ -13,7 +13,7 @@ import globalVariables from 'globals/globalVariables';
 import {Icon} from 'react-native-elements';
 
 const SelectedList = ({Data, onChange}) => {
-  const handlePress = item => {
+  const handlePress = (item) => {
     onChange(item);
   };
   const SelectedItem = ({item}) => {
@@ -27,7 +27,7 @@ const SelectedList = ({Data, onChange}) => {
           onPress={() => handlePress(item)}
         />
         <View style={styles.verticalDivider} />
-        <Text style={styles.selectedText}>{item.name}</Text>
+        <Text style={styles.selectedText}>{item?.name}</Text>
       </TouchableOpacity>
     );
   };
@@ -38,7 +38,7 @@ const SelectedList = ({Data, onChange}) => {
     <FlatList
       data={Data}
       renderItem={renderSelectedItems}
-      keyExtractor={item => item.id}
+      keyExtractor={(item) => item?.key?.toString()}
     />
   );
 };

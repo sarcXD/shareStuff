@@ -14,7 +14,7 @@ import {Icon} from 'react-native-elements';
 
 const FriendsList = ({friendList, selectedFriends, onChange}) => {
   const getColor = (item, arrayToCheck) => {
-    return arrayToCheck.find((el) => el.phone === item.phone)
+    return arrayToCheck?.find((el) => el?.phone === item?.phone)
       ? globalVariables.color.mainCard //seleceted
       : globalVariables.color.secondaryLayer; //not selected / deselected
   };
@@ -30,7 +30,7 @@ const FriendsList = ({friendList, selectedFriends, onChange}) => {
           setColor(getColor(item, selectedFriends));
         }}
         style={[styles.listItem, {backgroundColor: color}]}>
-        <Text style={styles.listItemText}>{item.name}</Text>
+        <Text style={styles.listItemText}>{item?.name}</Text>
       </TouchableOpacity>
     );
   };
@@ -42,8 +42,7 @@ const FriendsList = ({friendList, selectedFriends, onChange}) => {
       <FlatList
         data={friendList}
         renderItem={renderItem}
-        keyExtractor={(item) => item.key}
-        extraData={selectedFriends}
+        keyExtractor={(item) => item?.key?.toString()}
       />
     </View>
   );

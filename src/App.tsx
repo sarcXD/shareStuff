@@ -22,6 +22,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,17 @@ const App = () => {
     setUser(user);
   }
 
+  // UTILITY FUNCTIONS
+  const storeDataObj = async (key, value) => {
+    try {
+      const json = JSON.stringify(value);
+      await AsyncStorage.setItem('@' + key, json);
+    } catch (e) {
+      // saving error
+      console.log(e);
+    }
+  };
+
   function needOnboarding(user: any) {
     firestore()
       .collection('logins')
@@ -44,8 +56,12 @@ const App = () => {
         if (documentSnapshot.exists) {
           //returns {email, name, phoneNumber}
           let userData: any = documentSnapshot.data();
-          console.log(userData);
           setUserDetails(userData);
+          storeDataObj('userData', {
+            email: userData.email,
+            name: userData.name,
+            phone: userData.phone,
+          });
         }
         if (initializing) setInitializing(false);
       });

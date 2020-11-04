@@ -25,20 +25,21 @@ const CreatePlaylist = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const passedPlaylist = route.params.passedPlaylist;
   // objects to fetch ... users
+  let userData = {};
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [playlistObj, setPlaylistObj] = useState({
     name: passedPlaylist.name,
     desc: passedPlaylist.desc,
-    members: [],
+    users: [],
   });
   const [contactsList, setContactsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const location = RNLocalize.getLocales();
 
-  const readData = async (key, setter) => {
+  const useReadData = async (key, setter) => {
     try {
-      const value = await AsyncStorage.getItem('@' + key);
-      if (value !== null) {
+      let value = await AsyncStorage.getItem('@' + key);
+      if (value) {
         let parsedVal = JSON.parse(value);
         setter(parsedVal);
       }
@@ -47,9 +48,23 @@ const CreatePlaylist = ({route, navigation}) => {
     }
   };
 
+  const readData = (key) => {
+    try {
+      AsyncStorage.getItem('@' + key).then((value) => {
+        if (value) {
+          let parsedVal = JSON.parse(value);
+          userData = parsedVal;
+        }
+        fetchFromFirebaseDocRef(passedPlaylist.users, setSelectedFriends);
+      });
+    } catch (e) {
+      console.log('err', err);
+    }
+  };
+
   useEffect(() => {
-    readData('contactsList', setContactsList);
-    fetchFromFirebaseDocRef(passedPlaylist.users, setSelectedFriends);
+    useReadData('contactsList', setContactsList);
+    readData('userData');
   }, [contactsList.length]);
 
   // UTILITY
@@ -57,8 +72,12 @@ const CreatePlaylist = ({route, navigation}) => {
   // and fills the selectedFriends Object
   const fetchFromFirebaseDocRef = (objRef: any, setter: any) => {
     let promiseArr: any = [];
+    console.log(objRef);
     objRef.forEach((ref: any) => {
-      promiseArr.push(ref.get());
+      if (ref.id !== userData.phone) {
+        console.log(1);
+        promiseArr.push(ref.get());
+      }
     });
 
     let keyIter = 0;
@@ -73,6 +92,7 @@ const CreatePlaylist = ({route, navigation}) => {
           docData.key = keyIter;
 
           fetchedArr.push(docData);
+          console.log('fetched', fetchedArr);
           setter(fetchedArr);
 
           keyIter++;
@@ -165,10 +185,14 @@ const CreatePlaylist = ({route, navigation}) => {
     setModalVisible(true);
   };
 
+  // handles click of contact list modal, adds or removes the selected
+  // friends.
+  // Updates the playlist users
   const addToSelectedFriends = (item) => {
     let index = -1;
     let tempIndex = -1;
-    selectedFriends.forEach((ele) => {
+    let arrayCopy = JSON.parse(JSON.stringify(selectedFriends));
+    arrayCopy?.forEach((ele) => {
       tempIndex++;
       if (ele.key === item.key) {
         index = tempIndex;
@@ -176,33 +200,36 @@ const CreatePlaylist = ({route, navigation}) => {
       }
     });
     if (index === -1) {
-      selectedFriends.push(item);
+      arrayCopy.push(item);
     } else {
-      selectedFriends.splice(index, 1);
+      arrayCopy.splice(index, 1);
     }
-    console.log('selectedFriends', selectedFriends);
-    setSelectedFriends(selectedFriends);
-    let newMembers = selectedFriends;
-    playlistObj.members = newMembers;
-    setPlaylistObj(playlistObj);
+    setSelectedFriends(arrayCopy);
+    let newUsers = arrayCopy;
+    let playlistCopy = JSON.parse(JSON.stringify(playlistObj));
+    playlistCopy.users = newUsers;
+    setPlaylistObj(playlistCopy);
   };
 
   const removeSelectedItem = (item) => {
-    let arrayCopy = selectedFriends;
-    let index = arrayCopy.indexOf(item);
+    let index = -1;
     let tempIndex = -1;
-    selectedFriends.forEach((ele) => {
+    let arrayCopy = JSON.parse(JSON.stringify(selectedFriends));
+    arrayCopy.forEach((ele) => {
       tempIndex++;
       if (ele.key === item.key) {
         index = tempIndex;
         return;
       }
     });
+
     arrayCopy.splice(index, 1);
-    setSelectedFriends(selectedFriends);
-    let newMembers = selectedFriends;
-    playlistObj.members = newMembers;
-    setPlaylistObj(playlistObj);
+    setSelectedFriends(arrayCopy);
+    console.log(selectedFriends);
+    let newUsers = arrayCopy;
+    let playlistCopy = JSON.parse(JSON.stringify(playlistObj));
+    playlistCopy.users = newUsers;
+    setPlaylistObj(playlistCopy);
   };
 
   const updateTitle = (text) => {
@@ -212,7 +239,7 @@ const CreatePlaylist = ({route, navigation}) => {
   };
 
   const CreateBtn = () => {
-    if (playlistObj.name && playlistObj.members.length) {
+    if (playlistObj.name) {
       return (
         <View style={styles.submitBtn}>
           <Icon
