@@ -19,6 +19,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const getPlaylists = (playlistsRef: any) => {
     let playlistPromises: any = [];
+    if (playlistsRef == null) return;
     playlistsRef.forEach((playlist: any) => {
       playlistPromises.push(playlist.get());
     });
@@ -45,7 +46,6 @@ const HomeScreen = ({navigation, route}) => {
 
   React.useEffect(() => {
     getPlaylists(userDetails.playlists);
-    return;
   }, [DATA.length]);
 
   React.useLayoutEffect(() => {

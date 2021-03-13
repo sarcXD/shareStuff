@@ -30,14 +30,24 @@ const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser]: any = useState(null);
   const [userDetails, setUserDetails] = useState([]);
+  const [dataFetching, setDataFetching] = useState(true);
+  const colRef = firestore().collection('logins');
+
+  type userDataObj = {
+    email: string;
+    name: string;
+    phone: string;
+  };
 
   function onAuthStateChanged(user: any) {
     // temp fix around state persistance
     setUser(user);
+    if (initializing) setInitializing(false);
   }
 
   // UTILITY FUNCTIONS
-  const storeDataObj = async (key, value) => {
+  // store fetched user data in cache
+  const storeDataObj = async (key: string, value: userDataObj) => {
     try {
       const json = JSON.stringify(value);
       await AsyncStorage.setItem('@' + key, json);
@@ -47,24 +57,21 @@ const App = () => {
     }
   };
 
-  function needOnboarding(user: any) {
-    firestore()
-      .collection('logins')
-      .doc(user.phoneNumber)
-      .get()
-      .then((documentSnapshot) => {
-        if (documentSnapshot.exists) {
-          //returns {email, name, phoneNumber}
-          let userData: any = documentSnapshot.data();
-          setUserDetails(userData);
-          storeDataObj('userData', {
-            email: userData.email,
-            name: userData.name,
-            phone: userData.phone,
-          });
-        }
-        if (initializing) setInitializing(false);
+  // fetch user data from firebase db
+  async function getSetUserData(user: any) {
+    const documentSnapshot = await colRef.doc(user.phoneNumber).get();
+
+    if (documentSnapshot.exists) {
+      //returns {email, name, phoneNumber}
+      let userData: any = documentSnapshot.data();
+      setUserDetails(userData);
+      storeDataObj('userData', {
+        email: userData.email,
+        name: userData.name,
+        phone: userData.phone,
       });
+    }
+    setDataFetching(false);
   }
 
   useEffect(() => {
@@ -73,9 +80,11 @@ const App = () => {
   });
 
   useEffect(() => {
-    if (user) needOnboarding(user);
-    return;
-  }, [user?.phoneNumber]);
+    if (user) {
+      getSetUserData(user);
+      return;
+    }
+  });
 
   const ScreenInit = () => {
     if (user == null) {
@@ -89,7 +98,7 @@ const App = () => {
         />
       );
     }
-    if (!userDetails) {
+    if (userDetails?.length == 0) {
       return (
         <Stack.Screen
           name="Onboard"
@@ -104,6 +113,9 @@ const App = () => {
   };
 
   if (initializing) return null;
+
+  if (dataFetching) return null;
+
   return (
     <NavigationContainer>
       <Stack.Navigator

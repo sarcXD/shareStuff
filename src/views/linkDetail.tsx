@@ -1,11 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  View,
-  KeyboardAvoidingView,
+  StyleSheet, Text, TouchableOpacity, TextInput, View, KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   Linking,

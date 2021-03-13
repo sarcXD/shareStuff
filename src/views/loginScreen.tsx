@@ -10,11 +10,6 @@ import {
 } from 'react-native';
 import globalVariables from 'globals/globalVariables';
 import auth from '@react-native-firebase/auth';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from '@react-native-community/google-signin';
 
 const LoginScreen = () => {
   // If null, no SMS has been sent
@@ -45,16 +40,16 @@ const LoginScreen = () => {
     }
   }
 
-  const formatNumber = (num: string) => {
-    let onlyNumeric = num.replace(/[^0-9]/g, '');
+  const formatNumber = (num: string | undefined) => {
+    let onlyNumeric = num!.replace(/[^0-9]/g, '');
     setRawPhone(onlyNumeric);
     let formattedText: string = onlyNumeric.split(' ').join('');
-    if (formattedText?.length > 0) {
-      formattedText = formattedText
-        ?.match(new RegExp('.{1,4}', 'g'))
-        ?.join(' ');
+    if (formattedText !== undefined) {
+      formattedText = formattedText!
+        .match(new RegExp('.{1,4}', 'g'))!
+        .join(' ');
+      setPhone(formattedText);
     }
-    setPhone(formattedText);
   };
 
   // UTILITY COMPONENT

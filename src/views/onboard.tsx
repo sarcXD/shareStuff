@@ -23,7 +23,7 @@ const Onboard = ({route, navigation}) => {
   const formatNumber = (num: string) => {
     let onlyNumeric = num.replace(/[^0-9+]/g, '');
     let formattedText = onlyNumeric.split(' ').join('');
-    if (formattedText.length > 0) {
+    if (formattedText.length > 0 && formattedText != null) {
       formattedText = formattedText.match(new RegExp('.{1,4}', 'g')).join(' ');
     }
     return formattedText;
