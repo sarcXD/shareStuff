@@ -21,7 +21,7 @@ const DATA = {
   userId: 69,
   name: 'talha',
   desc:
-    'Man I came across this sickAf video, like checkout how awesome it is,the explanation is too good',
+    'I came across this nice talk',
   mainTag: 'tech',
   link: 'https://www.youtube.com/watch?v=C27RVio2rOs',
   totalMore: 2,
@@ -31,12 +31,12 @@ const DATA = {
     {voterId: 69, vote: 'minus'},
   ],
   comments: [
-    {id: 1, userId: 72, name: 'moughees', comment: 'wow! pretty good'},
+    {id: 1, userId: 72, name: 'Friend B', comment: 'wow! pretty good'},
     {
       id: 2,
       userId: 69,
       name: 'talha',
-      comment: 'yeah, what do you think about it',
+      comment: 'yeah, what do you think',
     },
   ],
 };

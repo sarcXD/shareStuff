@@ -21,11 +21,11 @@ const friendsArray = [
   },
   {
     id: '2',
-    name: 'Taha Ahmad',
+    name: 'Friend A',
   },
   {
     id: '3',
-    name: 'Moughees Ahmad',
+    name: 'Friend B',
   },
 ];
 

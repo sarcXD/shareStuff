@@ -14,31 +14,31 @@ import {Icon} from 'react-native-elements';
 const DATA = [
   {
     id: '1',
-    title: 'Ghees',
+    title: 'Friend A',
     unread: '13',
-    latestPostTitle: 'check this out guys',
+    latestPostTitle: 'check this out',
     ownerId: '1',
   },
   {
     id: '2',
     title: 'SharedPlaylist',
     unread: '2',
-    latestPostTitle: 'this is unreal',
+    latestPostTitle: 'this is nice',
     ownerId: '2',
   },
   {
     id: '3',
-    title: 'Khwaja',
+    title: 'Friend B',
     unread: '7',
-    latestPostTitle: 'sick new game for you I mean check ...',
+    latestPostTitle: 'new game ...',
     ownerId: '1',
   },
 ];
 
 const PLAYLIST = {
-  title: 'Khwaja',
+  title: 'Friend B',
   members: [
-    {id: '3', name: 'Moughees Ahmad'},
+    {id: '3', name: 'Friend A'},
     {id: '1', name: 'Talha Aamir'},
   ],
 };
