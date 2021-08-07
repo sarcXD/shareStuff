@@ -29,32 +29,32 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [onBoard, setOnBoard] = useState(false);
 
-  function onAuthStateChanged(user: any) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-    if (user) needOnboarding(user);
-  }
+  // function onAuthStateChanged(user: any) {
+  //   setUser(user);
+  //   if (initializing) setInitializing(false);
+  //   if (user) needOnboarding(user);
+  // }
 
-  function needOnboarding(user: any) {
-    console.log(user);
-    const loginDocument = firestore()
-      .collection('logins')
-      .doc(user.email)
-      .get()
-      .then((documentSnapshot) => {
-        setOnBoard(documentSnapshot.exists);
-        if (documentSnapshot.exists) {
-          // copy values and prepare for passing in to homeScreen element
-        }
-      });
-  }
+  // function needOnboarding(user: any) {
+  //   console.log(user);
+  //   const loginDocument = firestore()
+  //     .collection('logins')
+  //     .doc(user.email)
+  //     .get()
+  //     .then((documentSnapshot) => {
+  //       setOnBoard(documentSnapshot.exists);
+  //       if (documentSnapshot.exists) {
+  //         // copy values and prepare for passing in to homeScreen element
+  //       }
+  //     });
+  // }
 
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  });
+  // useEffect(() => {
+  //   const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+  //   return subscriber; // unsubscribe on unmount
+  // });
 
-  if (initializing) return null;
+  // if (initializing) return null;
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -64,7 +64,7 @@ const App = () => {
           },
           headerTintColor: globalVariables.color.title,
         }}>
-        {user == null ? (
+        {/* {user == null ? (
           <Stack.Screen
             name="Login"
             component={LoginScreen}
@@ -72,7 +72,7 @@ const App = () => {
               headerShown: false,
             }}
           />
-        ) : (
+        ) : ( */}
           <Stack.Screen
             name="Home"
             component={HomeScreen}
@@ -80,7 +80,7 @@ const App = () => {
               headerTitle: 'Home',
             })}
           />
-        )}
+        {/* )} */}
         <Stack.Screen
           name="CreatePlaylist"
           component={CreatePlaylist}
